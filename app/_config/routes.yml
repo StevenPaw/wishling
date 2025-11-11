@@ -1,0 +1,12 @@
+---
+Name: app-routes
+After:
+  - '#rootroutes'
+  - '#coreroutes'
+---
+SilverStripe\Control\Director:
+  rules:
+    # Beispiel-Routen für deine Webapp
+    '': 'App\Control\HomeController'
+    'api//$Action/$ID/$OtherID': 'App\Control\ApiController'
+    # Weitere Custom Routes hier hinzufügen

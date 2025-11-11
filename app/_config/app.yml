@@ -1,0 +1,8 @@
+---
+Name: app-config
+---
+# Admin-Backend bleibt aktiv für DataObjects und ModelAdmin
+SilverStripe\Admin\LeftAndMain:
+  # Hier kannst du spezifische Admin-Sections konfigurieren
+  extra_requirements_css: []
+  extra_requirements_javascript: []
