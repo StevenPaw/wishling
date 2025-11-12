@@ -1,0 +1,53 @@
+# API Tests für Wishling
+# Verwendung: REST Client Extension in VS Code
+# Drücken Sie "Send Request" über jeder Anfrage
+
+@baseUrl = https://wishling.ddev.site
+
+### Test 1: API Controller Index
+GET {{baseUrl}}/api/
+Content-Type: application/json
+
+### Test 2: API Controller getData mit Parameter
+GET {{baseUrl}}/api/data/123
+Content-Type: application/json
+
+### Test 3: Test API Controller
+GET {{baseUrl}}/api/test/
+Content-Type: application/json
+
+### Test 4: Wishlist API Index
+GET {{baseUrl}}/api/wishlist/
+Content-Type: application/json
+
+### Test 5: Alle Wishlists abrufen
+GET {{baseUrl}}/api/wishlist/wishlists
+Content-Type: application/json
+
+### Test 6: Neue Wishlist erstellen
+POST {{baseUrl}}/api/wishlist/wishlists
+Content-Type: application/json
+
+{
+    "name": "Test Wishlist",
+    "description": "Eine Test-Wunschliste"
+}
+
+### Test 7: Wishlist Details abrufen (Hash ersetzen)
+GET {{baseUrl}}/api/wishlist/wishlists/YOUR_WISHLIST_HASH
+Content-Type: application/json
+
+### Test 8: Wunsch erstellen
+POST {{baseUrl}}/api/wishlist/wishlists/YOUR_WISHLIST_HASH/wishes
+Content-Type: application/json
+
+{
+    "title": "Test Wunsch",
+    "description": "Ein Testwunsch",
+    "url": "https://example.com",
+    "price": "29.99"
+}
+
+### Test 9: CORS Preflight Test
+OPTIONS {{baseUrl}}/api/wishlist/wishlists
+Content-Type: application/json

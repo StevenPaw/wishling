@@ -1,0 +1,423 @@
+{
+  "info": {
+    "name": "Wishling API Tests (Extended)",
+    "description": "Erweiterte Collection für das Testen der Wishling API mit automatischen Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://wishling.ddev.site",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "API Controller Tests",
+      "item": [
+        {
+          "name": "API Index",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is JSON', function () {",
+                  "    pm.response.to.have.header('Content-Type');",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+                  "});",
+                  "",
+                  "pm.test('Response has required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('message');",
+                  "    pm.expect(jsonData).to.have.property('version');",
+                  "    pm.expect(jsonData.message).to.eql('API Endpoint');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", ""]
+            }
+          }
+        },
+        {
+          "name": "API Get Data with ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains ID parameter', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('id');",
+                  "    pm.expect(jsonData.id).to.eql('123');",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 500ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/data/123",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "data", "123"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wishlist API Tests",
+      "item": [
+        {
+          "name": "Wishlist API Index",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('CORS headers are present', function () {",
+                  "    pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.eql('*');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", ""]
+            }
+          }
+        },
+        {
+          "name": "Get All Wishlists",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains wishlists array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('wishlists');",
+                  "    pm.expect(jsonData.wishlists).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/wishlists",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", "wishlists"]
+            }
+          }
+        },
+        {
+          "name": "Create Wishlist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Wishlist created successfully', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('wishlist');",
+                  "});",
+                  "",
+                  "pm.test('Store wishlist hash for later tests', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.wishlist && jsonData.wishlist.hash) {",
+                  "        pm.environment.set('wishlistHash', jsonData.wishlist.hash);",
+                  "        console.log('Stored wishlistHash: ' + jsonData.wishlist.hash);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Test Wishlist {{$timestamp}}\",\n  \"description\": \"Eine Test-Wunschliste erstellt via Postman\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/wishlists",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", "wishlists"]
+            }
+          }
+        },
+        {
+          "name": "Get Wishlist by Hash",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Wishlist details are correct', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('wishlist');",
+                  "    pm.expect(jsonData.wishlist).to.have.property('hash');",
+                  "    pm.expect(jsonData.wishlist.hash).to.eql(pm.environment.get('wishlistHash'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/wishlists/{{wishlistHash}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", "wishlists", "{{wishlistHash}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Wish",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Wish created successfully', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "    pm.expect(jsonData).to.have.property('wish');",
+                  "});",
+                  "",
+                  "pm.test('Store wish hash for later tests', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.wish && jsonData.wish.hash) {",
+                  "        pm.environment.set('wishHash', jsonData.wish.hash);",
+                  "        console.log('Stored wishHash: ' + jsonData.wish.hash);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Wunsch {{$timestamp}}\",\n  \"description\": \"Ein Testwunsch erstellt via Postman\",\n  \"url\": \"https://example.com/product/{{$randomInt}}\",\n  \"price\": \"{{$randomPrice}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/wishlists/{{wishlistHash}}/wishes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", "wishlists", "{{wishlistHash}}", "wishes"]
+            }
+          }
+        },
+        {
+          "name": "Get Wishes from Wishlist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains wishes array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('wishes');",
+                  "    pm.expect(jsonData.wishes).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/wishlists/{{wishlistHash}}/wishes",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", "wishlists", "{{wishlistHash}}", "wishes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test API Controller",
+      "item": [
+        {
+          "name": "Test API Index",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response contains API info', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('name');",
+                  "    pm.expect(jsonData.name).to.eql('Test API');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/test/",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "test", ""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Handling Tests",
+      "item": [
+        {
+          "name": "Test 404 Error",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 for non-existent endpoint', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/nonexistent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "nonexistent"]
+            }
+          }
+        },
+        {
+          "name": "Test Invalid Wishlist Hash",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404 for invalid wishlist hash', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/wishlist/wishlists/invalid-hash-123",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "wishlist", "wishlists", "invalid-hash-123"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "console.log('Running request to: ' + request.url);"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test('Response time is reasonable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});"
+        ]
+      }
+    }
+  ]
+}

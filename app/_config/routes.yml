@@ -10,7 +10,7 @@ SilverStripe\Control\Director:
     'api/test//$Action': 'App\Control\TestApiController'
 
     # API-Routen für Wishlist-API
-    'api/wishlist//$Action/$Hash/$WishHash': 'App\Control\WishlistApiController'
+    'api/wishlist': 'App\Control\WishlistApiController'
 
     # Beispiel-Routen für deine Webapp
     '': 'App\Control\HomeController'

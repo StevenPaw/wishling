@@ -14,6 +14,7 @@ class Wish extends DataObject
         'Hash' => 'Varchar(64)',
         'Price' => 'Decimal(10,2)',
         'URL' => 'Varchar(255)',
+        'Archived' => 'Boolean',
     ];
 
     private static $has_one = [
@@ -25,12 +26,14 @@ class Wish extends DataObject
         'Description' => 'Beschreibung',
         'Price' => 'Preis',
         'URL' => 'Link',
+        'Archived.Nice' => 'Archiviert',
     ];
 
     private static $searchable_fields = [
         'Title',
         'Price',
         'Hash',
+        'Archived',
     ];
 
     private static $default_sort = 'Created ASC';
@@ -56,6 +59,7 @@ class Wish extends DataObject
             'price' => (float) $this->Price,
             'url' => $this->URL,
             'hash' => $this->Hash,
+            'archived' => (bool) $this->Archived,
             'created' => $this->Created,
             'lastEdited' => $this->LastEdited,
             'parentId' => $this->ParentID,

@@ -1,0 +1,117 @@
+# 📦 Archivierung Tests für Wishling API
+
+@baseUrl = https://wishling.ddev.site
+
+# Test-Variablen (ersetzen Sie diese mit echten Werten)
+@testWishlistHash = 39d563b8a87bb70277a99ea3e1f474fa
+@testWishHash = b0c0386b9c03648cc2504f78d5f4ba1d
+
+### 🎯 SCHRITT 1: Test-Wish erstellen
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes
+Content-Type: application/json
+
+{
+    "title": "Archiv Test Wish",
+    "description": "Dieser Wunsch wird für Archivierungs-Tests verwendet",
+    "url": "https://example.com/archive-test",
+    "price": "33.50"
+}
+
+### 📊 SCHRITT 2: Aktive Wishes anzeigen (vor Archivierung)
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes
+Content-Type: application/json
+
+### 📦 SCHRITT 3: Wish archivieren (Methode 1 - empfohlen)
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}/archive
+Content-Type: application/json
+
+### 📊 SCHRITT 4: Aktive Wishes anzeigen (nach Archivierung - sollte leer sein)
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes
+Content-Type: application/json
+
+### 📦 SCHRITT 5: Archivierte Wishes anzeigen
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes?archived=true
+Content-Type: application/json
+
+### 🔄 SCHRITT 6: Wish dearchivieren
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}/unarchive
+Content-Type: application/json
+
+### 📊 SCHRITT 7: Aktive Wishes anzeigen (nach Dearchivierung)
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes
+Content-Type: application/json
+
+### 🛠️ SCHRITT 8: Archivierung via PUT mit Update
+PUT {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}
+Content-Type: application/json
+
+{
+    "title": "Erfüllter Wunsch ✅",
+    "description": "Dieser Wunsch wurde erfüllt und wird archiviert",
+    "archived": true
+}
+
+### 🔍 SCHRITT 9: Einzelnen archivierten Wish abrufen
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}
+Content-Type: application/json
+
+### 📈 SCHRITT 10: Statistik-Überblick
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes?archived=false
+Content-Type: application/json
+
+###
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes?archived=true
+Content-Type: application/json
+
+## 🧪 Erweiterte Tests
+
+### 🚫 Test: Nicht existierenden Wish archivieren
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/invalid-hash-123/archive
+Content-Type: application/json
+
+### 🚫 Test: Wish in nicht existierender Wishlist archivieren
+POST {{baseUrl}}/api/wishlist/wishlists/invalid-wishlist-hash/wishes/{{testWishHash}}/archive
+Content-Type: application/json
+
+### 🔄 Test: Bereits archivierten Wish nochmal archivieren
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}/archive
+Content-Type: application/json
+
+### 🔄 Test: Nicht archivierten Wish dearchivieren
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}/unarchive
+Content-Type: application/json
+
+## 🎯 Workflow-Tests
+
+### Szenario A: Wunsch erfüllt → archivieren
+# 1. Wish erstellen
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes
+Content-Type: application/json
+
+{
+    "title": "Nintendo Switch",
+    "description": "Gaming-Konsole",
+    "url": "https://nintendo.com/switch",
+    "price": "299.99"
+}
+
+###
+# 2. Als erfüllt markieren und archivieren
+PUT {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/WISH_HASH_FROM_STEP_1
+Content-Type: application/json
+
+{
+    "title": "Nintendo Switch ✅ ERHALTEN!",
+    "description": "Gaming-Konsole - Geschenk zu Weihnachten erhalten!",
+    "archived": true
+}
+
+### Szenario B: Alte Wishes aufräumen
+# Alle archivierten Wishes anzeigen
+GET {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes?archived=true
+Content-Type: application/json
+
+### Szenario C: Archivierte Wishes reaktivieren
+# Archivierte Wishes dearchivieren (falls wieder relevant)
+POST {{baseUrl}}/api/wishlist/wishlists/{{testWishlistHash}}/wishes/{{testWishHash}}/unarchive
+Content-Type: application/json
