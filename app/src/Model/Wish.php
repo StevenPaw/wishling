@@ -43,4 +43,35 @@ class Wish extends DataObject
 
         return $fields;
     }
+
+    /**
+     * JSON-Serialisierung für API
+     */
+    public function toArray()
+    {
+        return [
+            'id' => $this->ID,
+            'title' => $this->Title,
+            'description' => $this->Description,
+            'price' => (float) $this->Price,
+            'url' => $this->URL,
+            'hash' => $this->Hash,
+            'created' => $this->Created,
+            'lastEdited' => $this->LastEdited,
+            'parentId' => $this->ParentID,
+            'parentHash' => $this->Parent()->Hash ?? null,
+        ];
+    }
+
+    /**
+     * Generiere Hash automatisch beim Erstellen
+     */
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+
+        if (!$this->Hash) {
+            $this->Hash = bin2hex(random_bytes(16));
+        }
+    }
 }

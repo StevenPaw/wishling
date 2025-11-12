@@ -54,4 +54,40 @@ class Wishlist extends DataObject
 
         return $fields;
     }
+
+    /**
+     * JSON-Serialisierung für API
+     */
+    public function toArray()
+    {
+        $wishes = [];
+        foreach ($this->Wishes() as $wish) {
+            $wishes[] = $wish->toArray();
+        }
+
+        return [
+            'id' => $this->ID,
+            'title' => $this->Title,
+            'username' => $this->Username,
+            'description' => $this->Description,
+            'active' => (bool) $this->Active,
+            'hash' => $this->Hash,
+            'created' => $this->Created,
+            'lastEdited' => $this->LastEdited,
+            'wishes' => $wishes,
+            'wishCount' => count($wishes)
+        ];
+    }
+
+    /**
+     * Generiere Hash automatisch beim Erstellen
+     */
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+
+        if (!$this->Hash) {
+            $this->Hash = bin2hex(random_bytes(16));
+        }
+    }
 }

@@ -6,6 +6,12 @@ After:
 ---
 SilverStripe\Control\Director:
   rules:
+    # Test-API für Debugging
+    'api/test//$Action': 'App\Control\TestApiController'
+
+    # API-Routen für Wishlist-API
+    'api/wishlist//$Action/$Hash/$WishHash': 'App\Control\WishlistApiController'
+
     # Beispiel-Routen für deine Webapp
     '': 'App\Control\HomeController'
     'api//$Action/$ID/$OtherID': 'App\Control\ApiController'
