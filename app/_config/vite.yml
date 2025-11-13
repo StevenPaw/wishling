@@ -3,6 +3,4 @@ Name: vite-config
 ---
 
 Atwx\ViteHelper\Helper\ViteHelper:
-  manifest_path: "/app/client/dist/.vite/manifest.json"
-  output_url: "/_resources/app/client/dist/"
-  editor_css: 'app/client/src/scss/editor.scss'
+  editor_css: "app/client/src/scss/editor.scss"

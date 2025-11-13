@@ -17,7 +17,7 @@ class WishlistController extends Controller
     private static $url_handlers = [
         '' => 'index',
         'create' => 'createWishlist',
-        'list/$Hash' => 'ownerView', 
+        'list/$Hash' => 'ownerView',
         'view/$Hash' => 'guestView',
         '$Hash/edit' => 'ownerView',
         '$Hash/share' => 'shareView'
@@ -25,7 +25,7 @@ class WishlistController extends Controller
 
     private static $allowed_actions = [
         'index',
-        'createWishlist', 
+        'createWishlist',
         'ownerView',
         'guestView',
         'shareView'
@@ -36,9 +36,6 @@ class WishlistController extends Controller
      */
     public function index(HTTPRequest $request)
     {
-        // Requirements::css('app/css/wishlist.css');
-        // Requirements::javascript('app/js/wishlist.js');
-        
         return $this->customise([
             'Title' => 'Wishling - Deine Wunschliste erstellen',
             'MetaTitle' => 'Wishling - Erstelle deine persönliche Wunschliste'
@@ -80,7 +77,7 @@ class WishlistController extends Controller
     /**
      * Guest-Ansicht - Nur lesen, kein Bearbeiten
      */
-    public function guestView(HTTPRequest $request) 
+    public function guestView(HTTPRequest $request)
     {
         $hash = $request->param('Hash');
         if (!$hash) {

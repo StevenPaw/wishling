@@ -1,7 +1,7 @@
-name: Wishling
+name: wishling
 type: silverstripe
-docroot: ""
-php_version: "8.3"
+docroot: public
+php_version: "8.4"
 webserver_type: apache-fpm
 xdebug_enabled: false
 additional_hostnames: []
@@ -12,8 +12,18 @@ database:
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
+web_extra_exposed_ports:
+    - name: vite
+      container_port: 5173
+      http_port: 5172
+      https_port: 5173
+hooks:
+    post-start:
+        - exec: bash -c 'yarn'
+        - exec: bash -c 'yarn build'
+        - exec: bash -c 'composer install'
+        - exec: bash -c 'sake db:build --flush'
 corepack_enable: false
-
 # Key features of DDEV's config.yaml:
 
 # name: <projectname> # Name of the project, automatically provides
@@ -176,7 +186,7 @@ corepack_enable: false
 # The mailpit port is not normally bound on the host at all, instead being routed
 # through ddev-router, but it can be bound directly to localhost if specified here.
 
-# webimage_extra_packages: [php7.4-tidy, php-bcmath]
+webimage_extra_packages: [python3, python3-pip, python3-pandas, python3-openpyxl]
 # Extra Debian packages that are needed in the webimage can be added here
 
 # dbimage_extra_packages: [telnet,netcat]
@@ -223,13 +233,6 @@ corepack_enable: false
 # default_container_timeout: 120
 # The default time that DDEV waits for all containers to become ready can be increased from
 # the default 120. This helps in importing huge databases, for example.
-
-# Expose Vite dev server port
-web_extra_exposed_ports:
-- name: vite
-  container_port: 5173
-  http_port: 5172
-  https_port: 5173
 
 #web_extra_exposed_ports:
 #- name: nodejs

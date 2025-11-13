@@ -1,0 +1,20 @@
+{
+    "name": "Wishling",
+    "short_name": "Wishling",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "_resources/app/client/icons/apple_touch_icon_180.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "_resources/app/client/icons/apple_touch_icon_120.png",
+            "sizes": "120x120",
+            "type": "image/png"
+        }
+    ]
+}
