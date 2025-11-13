@@ -1,0 +1,20 @@
+/* Editor CSS for SilverStripe CMS */
+@use 'variables';
+
+.cms-content {
+  .editor {
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+  }
+  
+  .form-group {
+    margin-bottom: var(--spacing-md);
+  }
+  
+  .form-control {
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: var(--spacing-sm);
+  }
+}

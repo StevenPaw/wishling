@@ -1,0 +1,51 @@
+{
+  "_wishlist-BDMoVlef.css": {
+    "file": "assets/wishlist-BDMoVlef.css",
+    "src": "_wishlist-BDMoVlef.css"
+  },
+  "app/client/src/js/main.js": {
+    "file": "assets/main.js-DtaBFqCc.js",
+    "name": "main.js",
+    "src": "app/client/src/js/main.js",
+    "isEntry": true,
+    "css": [
+      "assets/main-DcYrZXF1.css"
+    ]
+  },
+  "app/client/src/js/wishlist-guest.js": {
+    "file": "assets/wishlist-guest.js-BjXE57In.js",
+    "name": "wishlist-guest.js",
+    "src": "app/client/src/js/wishlist-guest.js",
+    "isEntry": true,
+    "css": [
+      "assets/wishlist-BDMoVlef.css"
+    ]
+  },
+  "app/client/src/js/wishlist.js": {
+    "file": "assets/wishlist.js-DDh9VBWB.js",
+    "name": "wishlist.js",
+    "src": "app/client/src/js/wishlist.js",
+    "isEntry": true,
+    "css": [
+      "assets/wishlist-BDMoVlef.css"
+    ]
+  },
+  "app/client/src/scss/editor.scss": {
+    "file": "assets/editor-BOzmDDFF.css",
+    "src": "app/client/src/scss/editor.scss",
+    "isEntry": true,
+    "name": "editor.scss",
+    "names": [
+      "editor.css"
+    ]
+  },
+  "app/client/src/scss/main.scss": {
+    "file": "assets/main-DcYrZXF1.css",
+    "src": "app/client/src/scss/main.scss",
+    "isEntry": true,
+    "name": "main.scss",
+    "names": [
+      "main.css"
+    ]
+  }
+}

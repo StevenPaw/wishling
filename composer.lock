@@ -4,8 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ef9500cf71f278c495865be7972d614",
+    "content-hash": "54be90c0c46e64a69107dd84555c40c8",
     "packages": [
+        {
+            "name": "atwx/silverstripe-vitehelper",
+            "version": "v0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/atwx/silverstripe-vitehelper.git",
+                "reference": "68242424ef6f2516d825717cb0df241d32aa267e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/atwx/silverstripe-vitehelper/zipball/68242424ef6f2516d825717cb0df241d32aa267e",
+                "reference": "68242424ef6f2516d825717cb0df241d32aa267e",
+                "shasum": ""
+            },
+            "require": {
+                "silverstripe/framework": "^4.0||^5.0"
+            },
+            "type": "silverstripe-vendormodule",
+            "autoload": {
+                "psr-4": {
+                    "Atwx\\ViteHelper\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "A helper to use vitejs with silverstripe cms",
+            "keywords": [
+                "cms",
+                "silverstripe"
+            ],
+            "support": {
+                "issues": "https://github.com/atwx/silverstripe-vitehelper/issues",
+                "source": "https://github.com/atwx/silverstripe-vitehelper/tree/v0.5"
+            },
+            "time": "2025-10-28T15:55:17+00:00"
+        },
         {
             "name": "colymba/gridfield-bulk-editing-tools",
             "version": "4.1.1",
@@ -441,12 +479,12 @@
             "version": "v4.4.15",
             "source": {
                 "type": "git",
-                "url": "https://github.com/oscarotero/Embed.git",
+                "url": "https://github.com/php-embed/Embed.git",
                 "reference": "62bd05060757a874673b4cda2299d94dd18f9a85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oscarotero/Embed/zipball/62bd05060757a874673b4cda2299d94dd18f9a85",
+                "url": "https://api.github.com/repos/php-embed/Embed/zipball/62bd05060757a874673b4cda2299d94dd18f9a85",
                 "reference": "62bd05060757a874673b4cda2299d94dd18f9a85",
                 "shasum": ""
             },
@@ -6733,6 +6771,6 @@
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
