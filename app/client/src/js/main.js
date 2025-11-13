@@ -1,6 +1,3 @@
-// Main JavaScript entry point
-import '../scss/main.scss';
-
 // Wishlist creation functionality
 class WishlistCreator {
   constructor() {
@@ -22,7 +19,7 @@ class WishlistCreator {
   async handleCreateWishlist(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    
+
     const wishlistData = {
       name: formData.get('name'),
       description: formData.get('description'),
@@ -51,7 +48,7 @@ class WishlistCreator {
       });
 
       const result = await response.json();
-      
+
       if (response.ok) {
         // Show success message with links
         if (window.showSuccessMessage) {
@@ -61,14 +58,14 @@ class WishlistCreator {
       } else {
         this.showError(result.message || 'Fehler beim Erstellen der Wunschliste');
       }
-      
+
       // Reset button
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
-      
+
     } catch (error) {
       this.showError('Netzwerkfehler: ' + error.message);
-      
+
       // Reset button
       const submitBtn = event.target.querySelector('button[type="submit"]');
       submitBtn.disabled = false;
@@ -107,7 +104,7 @@ class WishlistCreator {
 
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
-    
+
     // Set background color based on type
     if (type === 'success') {
       notification.style.backgroundColor = '#28a745';
@@ -116,7 +113,7 @@ class WishlistCreator {
     } else {
       notification.style.backgroundColor = '#17a2b8';
     }
-    
+
     notification.style.display = 'block';
 
     // Auto-hide after 3 seconds

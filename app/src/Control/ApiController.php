@@ -6,11 +6,6 @@ use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 
-/**
- * ApiController - Beispiel für einen API-Controller
- *
- * Dieser Controller zeigt, wie du API-Endpoints ohne SiteTree erstellen kannst
- */
 class ApiController extends Controller
 {
     /**
