@@ -1,4 +1,24 @@
 {
+  "app/client/src/fonts/quicksand-v37-latin-300.woff2": {
+    "file": "assets/quicksand-v37-latin-300-BDtmyj0I.woff2",
+    "src": "app/client/src/fonts/quicksand-v37-latin-300.woff2"
+  },
+  "app/client/src/fonts/quicksand-v37-latin-500.woff2": {
+    "file": "assets/quicksand-v37-latin-500-_DbwbYKP.woff2",
+    "src": "app/client/src/fonts/quicksand-v37-latin-500.woff2"
+  },
+  "app/client/src/fonts/quicksand-v37-latin-600.woff2": {
+    "file": "assets/quicksand-v37-latin-600-DTBPeRoM.woff2",
+    "src": "app/client/src/fonts/quicksand-v37-latin-600.woff2"
+  },
+  "app/client/src/fonts/quicksand-v37-latin-700.woff2": {
+    "file": "assets/quicksand-v37-latin-700-Dpk7G9Y6.woff2",
+    "src": "app/client/src/fonts/quicksand-v37-latin-700.woff2"
+  },
+  "app/client/src/fonts/quicksand-v37-latin-regular.woff2": {
+    "file": "assets/quicksand-v37-latin-regular-BSDtH9U0.woff2",
+    "src": "app/client/src/fonts/quicksand-v37-latin-regular.woff2"
+  },
   "app/client/src/js/main.js": {
     "file": "assets/main.js-hVaghDd8.js",
     "name": "main.js",
@@ -6,7 +26,7 @@
     "isEntry": true
   },
   "app/client/src/scss/editor.scss": {
-    "file": "assets/editor-BOzmDDFF.css",
+    "file": "assets/editor-Bd4vepDb.css",
     "src": "app/client/src/scss/editor.scss",
     "isEntry": true,
     "name": "editor.scss",
@@ -15,7 +35,7 @@
     ]
   },
   "app/client/src/scss/main.scss": {
-    "file": "assets/main-4bskDUxG.css",
+    "file": "assets/main-COEAEo7d.css",
     "src": "app/client/src/scss/main.scss",
     "isEntry": true,
     "name": "main.scss",

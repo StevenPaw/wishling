@@ -5,7 +5,7 @@ namespace App\Model;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
-
+use SilverStripe\Control\Director;
 class Wishlist extends DataObject
 {
     private static $table_name = 'Wishlist';
@@ -15,6 +15,7 @@ class Wishlist extends DataObject
         'Username' => 'Varchar(150)',
         'Description' => 'Text',
         'Active' => 'Boolean',
+        'OwnerHash' => 'Varchar(64)',
         'Hash' => 'Varchar(64)',
     ];
 
@@ -87,7 +88,22 @@ class Wishlist extends DataObject
         parent::onBeforeWrite();
 
         if (!$this->Hash) {
-            $this->Hash = bin2hex(random_bytes(16));
+            $this->Hash = bin2hex(random_bytes(32));
         }
+
+        if (!$this->OwnerHash) {
+            $this->OwnerHash = bin2hex(random_bytes(32));
+        }
+    }
+
+    /**
+     * Gibt den Link zur Wunschliste zurück
+     * @param bool $absolute Wenn true, mit Domain
+     * @return string
+     */
+    public function ViewLink()
+    {
+        $link = '/wishlist/view/' . $this->Hash;
+        return Director::absoluteURL($link);
     }
 }

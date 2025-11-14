@@ -1,7 +1,11 @@
-// Import variables first
-@use 'variables' as *;
+@use "fonts.scss";
+@use "normalize.scss";
+@use "variables" as *;
+@use "typography.scss";
+@use "forms.scss";
 
-@use 'typography';
+@use "layout/footer.scss";
+@use "layout/header.scss";
 
 // Reset and base styles
 * {
@@ -11,5 +15,39 @@
 }
 
 body {
-    background-color: black;
+    background-color: var(--ColorBackground);
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+        "header"
+        "content"
+        "footer";
+    width: 100%;
+    overflow-x: hidden;
+
+    .area_header {
+        grid-area: header;
+        z-index: 100;
+    }
+
+    .area_content {
+        grid-area: content;
+    }
+
+    .area_footer {
+        grid-area: footer;
+    }
+
+    section {
+        max-width: var(--MaxWidth);
+        margin: 0 auto;
+    }
+
+    .section_content {
+        padding: 20px;
+        max-width: var(--MaxWidth);
+        margin: 0 auto;
+    }
 }

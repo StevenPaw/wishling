@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Control;
+namespace App\Controllers;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;

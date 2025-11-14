@@ -7,11 +7,10 @@ After:
 SilverStripe\Control\Director:
   rules:
     # Frontend Routes
-    'wishlist//$Action/$ID/$OtherID': 'App\Control\WishlistController'
+    'wishlist//$Action/$ID/$OtherID': 'App\Controllers\WishlistController'
 
     # API Routes
-    'api/wishlist//$Action/$Hash/$WishHash': 'App\Control\ApiController'
-    'api//$Action/$ID/$OtherID': 'App\Control\ApiController'
+    'api//$Action/$ID/$OtherID': 'App\Controllers\ApiController'
 
     # Home
-    '': 'App\Control\HomeController'
+    '': 'App\Controllers\HomeController'

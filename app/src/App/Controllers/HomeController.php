@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Control;
+namespace App\Controllers;
 
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
@@ -45,10 +45,10 @@ class HomeController extends Controller
     public function index(HTTPRequest $request)
     {
         // Du kannst Daten an dein Template übergeben
-        return $this->customise([
+        return $this->render([
             'Title' => 'Willkommen',
             'Content' => 'Dies ist deine Webapp ohne SiteTree',
-        ])->renderWith(['App\\Control\\HomeController', 'Page']);
+        ]);
     }
 
     /**
