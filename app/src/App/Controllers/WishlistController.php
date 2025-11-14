@@ -49,8 +49,13 @@ class WishlistController extends Controller
             return $this->httpError(404, 'Wishlist nicht gefunden');
         }
 
+        $wishes = $wishlist->Wishes()->filter('Archived', false);
+        $archivedWishes = $wishlist->Wishes()->filter('Archived', true);
+
         return $this->customise([
             'Wishlist' => $wishlist,
+            'Wishes' => $wishes,
+            'ArchivedWishes' => $archivedWishes,
             'ViewLink' => $wishlist->ViewLink()
         ])->renderWith(['App\Controllers\WishlistController_edit', 'Page']);
     }
@@ -157,8 +162,8 @@ class WishlistController extends Controller
         $fields = FieldList::create(
             TextField::create('Title', 'Wunsch'),
             TextField::create('Description', 'Beschreibung'),
-            TextField::create('Price', 'Preis'),
-            TextField::create('URL', 'Link'),
+            TextField::create('Price', 'Preis')->setAttribute('placeholder', 'Optional'),
+            TextField::create('URL', 'Link')->setAttribute('placeholder', 'Optional'),
             HiddenField::create('ParentID', 'ParentID', $wishlist->ID),
             HiddenField::create('OwnerHash', 'OwnerHash', $wishlist->OwnerHash)
         );

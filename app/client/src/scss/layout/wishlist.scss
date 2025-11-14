@@ -1,0 +1,41 @@
+// Notification Styles
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    max-width: 400px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease-in-out;
+
+    &.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    &-success {
+        background-color: #10b981;
+        color: white;
+    }
+
+    &-error {
+        background-color: #ef4444;
+        color: white;
+    }
+
+    &-info {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+    &-warning {
+        background-color: #f59e0b;
+        color: white;
+    }
+}

@@ -19,9 +19,11 @@ class ApiController extends Controller
         'index',
         'getwishlist',
         'addwishlist',
+        'updatewishlist',
         'archivewishlist',
         'getwish',
         'addwish',
+        'updatewish',
         'archivewish',
     ];
 
@@ -50,9 +52,11 @@ class ApiController extends Controller
             'endpoints' => [
                 'POST /api/getwishlist' => 'Wishlist abrufen (Payload: Hash oder OwnerHash)',
                 'POST /api/addwishlist' => 'Neue Wishlist erstellen',
+                'POST /api/updatewishlist' => 'Wishlist aktualisieren (Payload: OwnerHash + Felder)',
                 'POST /api/archivewishlist' => 'Wishlist archivieren (Payload: Hash oder OwnerHash)',
                 'POST /api/getwish' => 'Wish abrufen (Payload: Hash)',
                 'POST /api/addwish' => 'Neuen Wish erstellen (Payload: OwnerHash + Wish-Daten)',
+                'POST /api/updatewish' => 'Wish aktualisieren (Payload: Hash + Felder)',
                 'POST /api/archivewish' => 'Wish archivieren (Payload: Hash)',
             ]
         ]);
@@ -100,6 +104,40 @@ class ApiController extends Controller
         }
 
         return $this->jsonResponse($wishlist, 201);
+    }
+
+    /**
+     * Wishlist aktualisieren
+     * POST /api/updatewishlist
+     * Payload: { "OwnerHash": "...", "Title": "...", "Description": "...", "Username": "..." }
+     */
+    public function updatewishlist(HTTPRequest $request)
+    {
+        $data = json_decode($request->getBody(), true);
+
+        if (!isset($data['OwnerHash'])) {
+            return $this->jsonError('OwnerHash erforderlich', 400);
+        }
+
+        $wishlist = Wishlist::get()->filter('OwnerHash', $data['OwnerHash'])->first();
+
+        if (!$wishlist) {
+            return $this->jsonError('Wishlist nicht gefunden', 404);
+        }
+
+        if (isset($data['Title'])) $wishlist->Title = $data['Title'];
+        if (isset($data['Description'])) $wishlist->Description = $data['Description'];
+        if (isset($data['Username'])) $wishlist->Username = $data['Username'];
+
+        try {
+            $wishlist->write();
+            return $this->jsonResponse([
+                'success' => true,
+                'wishlist' => $wishlist->toMap()
+            ]);
+        } catch (ValidationException $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
     }
 
     /**
@@ -174,7 +212,8 @@ class ApiController extends Controller
         $wish->ParentID = $wishlist->ID;
         $wish->Title = $data['Title'] ?? '';
         $wish->Description = $data['Description'] ?? '';
-        $wish->Price = $data['Price'] ?? null;
+        // Price: leere Strings als NULL speichern
+        $wish->Price = !empty($data['Price']) ? $data['Price'] : null;
         $wish->URL = $data['URL'] ?? '';
 
         try {
@@ -187,7 +226,44 @@ class ApiController extends Controller
         } catch (ValidationException $e) {
             return $this->jsonError($e->getMessage(), 400);
         }
-    }    /**
+    }
+
+    /**
+     * Wish aktualisieren
+     * POST /api/updatewish
+     * Payload: { "Hash": "...", "Title": "...", "Description": "...", "Price": "...", "URL": "..." }
+     */
+    public function updatewish(HTTPRequest $request)
+    {
+        $data = json_decode($request->getBody(), true);
+
+        if (!isset($data['Hash'])) {
+            return $this->jsonError('Hash erforderlich', 400);
+        }
+
+        $wish = Wish::get()->filter('Hash', $data['Hash'])->first();
+
+        if (!$wish) {
+            return $this->jsonError('Wish nicht gefunden', 404);
+        }
+
+        if (isset($data['Title'])) $wish->Title = $data['Title'];
+        if (isset($data['Description'])) $wish->Description = $data['Description'];
+        if (isset($data['Price'])) $wish->Price = !empty($data['Price']) ? $data['Price'] : null;
+        if (isset($data['URL'])) $wish->URL = $data['URL'];
+
+        try {
+            $wish->write();
+            return $this->jsonResponse([
+                'success' => true,
+                'wish' => $wish->toMap()
+            ]);
+        } catch (ValidationException $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
+    }
+
+    /**
      * Wish archivieren
      * POST /api/archivewish
      * Payload: { "Hash": "..." }
@@ -209,7 +285,10 @@ class ApiController extends Controller
         $wish->Archived = true;
         $wish->write();
 
-        return $this->jsonResponse($wish);
+        return $this->jsonResponse([
+            'success' => true,
+            'wish' => $wish->toMap()
+        ]);
     }
 
     /**
