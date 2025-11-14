@@ -21,6 +21,18 @@ class Wish extends DataObject
         'Parent' => Wishlist::class,
     ];
 
+    private static $has_many = [
+        'Reservations' => WishReservation::class,
+    ];
+
+    private static $cascade_deletes = [
+        'Reservations',
+    ];
+
+    private static $owns = [
+        'Reservations',
+    ];
+
     private static $summary_fields = [
         'Title' => 'Titel',
         'Description' => 'Beschreibung',

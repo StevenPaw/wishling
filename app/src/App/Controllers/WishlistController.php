@@ -65,7 +65,7 @@ class WishlistController extends Controller
      */
     public function view(HTTPRequest $request)
     {
-        $hash = $request->param('Hash');
+        $hash = $request->param('ID');
         if (!$hash) {
             return $this->httpError(404, 'Wishlist nicht gefunden');
         }
@@ -75,16 +75,14 @@ class WishlistController extends Controller
             return $this->httpError(404, 'Wishlist nicht gefunden');
         }
 
-        // Requirements::css('app/css/wishlist.css');
-        // Requirements::javascript('app/js/wishlist-guest.js');
+        $wishes = $wishlist->Wishes()->filter('Archived', false);
 
         return $this->customise([
-            'Title' => $wishlist->Name . ' - Wunschliste',
-            'MetaTitle' => $wishlist->Name . ' - Wunschliste von ' . $wishlist->CreatorName,
             'Wishlist' => $wishlist,
+            'Wishes' => $wishes,
             'IsOwner' => false,
             'CurrentHash' => $hash
-        ])->renderWith(['WishlistGuest', 'Page']);
+        ])->renderWith(['App\Controllers\WishlistController_view', 'Page']);
     }
 
     /**
@@ -135,7 +133,7 @@ class WishlistController extends Controller
         // Optional: Setze weitere Felder, z.B. CreatorID, Hash etc.
         $wishlist->write();
         $form->sessionMessage('Wunschliste wurde angelegt!', 'good');
-        return $this->redirect('wishlist/ownerview/' . $wishlist->OwnerHash);
+        return $this->redirect('wishlist/edit/' . $wishlist->OwnerHash);
     }
 
     public function doEditWishlist($data, $form)

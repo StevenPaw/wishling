@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Model\Wishlist;
 use App\Model\Wish;
+use App\Model\WishReservation;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
@@ -25,6 +26,8 @@ class ApiController extends Controller
         'addwish',
         'updatewish',
         'archivewish',
+        'reservewish',
+        'unreservewish',
     ];
 
     /**
@@ -58,6 +61,8 @@ class ApiController extends Controller
                 'POST /api/addwish' => 'Neuen Wish erstellen (Payload: OwnerHash + Wish-Daten)',
                 'POST /api/updatewish' => 'Wish aktualisieren (Payload: Hash + Felder)',
                 'POST /api/archivewish' => 'Wish archivieren (Payload: Hash)',
+                'POST /api/reservewish' => 'Wish reservieren (Payload: Hash + GuestName + Message)',
+                'POST /api/unreservewish' => 'Wish-Reservierung aufheben (Payload: Hash + ReservationID)',
             ]
         ]);
     }
@@ -289,6 +294,94 @@ class ApiController extends Controller
             'success' => true,
             'wish' => $wish->toMap()
         ]);
+    }
+
+    /**
+     * Wish reservieren
+     * POST /api/reservewish
+     * Payload: { "Hash": "...", "GuestName": "...", "Message": "..." }
+     */
+    public function reservewish(HTTPRequest $request)
+    {
+        $data = json_decode($request->getBody(), true);
+
+        if (!isset($data['Hash'])) {
+            return $this->jsonError('Hash erforderlich', 400);
+        }
+
+        if (!isset($data['GuestName']) || empty(trim($data['GuestName']))) {
+            return $this->jsonError('Gastname erforderlich', 400);
+        }
+
+        $wish = Wish::get()->filter('Hash', $data['Hash'])->first();
+
+        if (!$wish) {
+            return $this->jsonError('Wish nicht gefunden', 404);
+        }
+
+        // Prüfe ob bereits reserviert
+        if ($wish->Reservations()->exists()) {
+            return $this->jsonError('Dieser Wunsch wurde bereits reserviert', 400);
+        }
+
+        $reservation = new WishReservation();
+        $reservation->ParentID = $wish->ID;
+        $reservation->GuestName = trim($data['GuestName']);
+        $reservation->Message = isset($data['Message']) ? trim($data['Message']) : '';
+
+        try {
+            $reservation->write();
+            return $this->jsonResponse([
+                'success' => true,
+                'reservation' => [
+                    'id' => $reservation->ID,
+                    'guestName' => $reservation->GuestName,
+                    'message' => $reservation->Message,
+                ]
+            ]);
+        } catch (ValidationException $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
+    }
+
+    /**
+     * Wish-Reservierung aufheben
+     * POST /api/unreservewish
+     * Payload: { "Hash": "...", "ReservationID": ... }
+     */
+    public function unreservewish(HTTPRequest $request)
+    {
+        $data = json_decode($request->getBody(), true);
+
+        if (!isset($data['Hash'])) {
+            return $this->jsonError('Hash erforderlich', 400);
+        }
+
+        if (!isset($data['ReservationID'])) {
+            return $this->jsonError('ReservationID erforderlich', 400);
+        }
+
+        $wish = Wish::get()->filter('Hash', $data['Hash'])->first();
+
+        if (!$wish) {
+            return $this->jsonError('Wish nicht gefunden', 404);
+        }
+
+        $reservation = WishReservation::get()->byID($data['ReservationID']);
+
+        if (!$reservation || $reservation->ParentID != $wish->ID) {
+            return $this->jsonError('Reservierung nicht gefunden', 404);
+        }
+
+        try {
+            $reservation->delete();
+            return $this->jsonResponse([
+                'success' => true,
+                'message' => 'Reservierung wurde aufgehoben'
+            ]);
+        } catch (Exception $e) {
+            return $this->jsonError($e->getMessage(), 400);
+        }
     }
 
     /**

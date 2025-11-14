@@ -126,11 +126,15 @@ class WishlistCreator {
 // Wish management functionality
 class WishManager {
   constructor() {
+    this.reservationCookieName = 'wishling_reservations';
+    this.guestNameCookieName = 'wishling_guest_name';
     this.init();
   }
 
   init() {
     this.bindEvents();
+    this.updateReservationButtons();
+    this.prefillGuestName();
   }
 
   bindEvents() {
@@ -160,6 +164,26 @@ class WishManager {
         this.makeEditable(e.target, 'wishlist');
       }
     });
+
+    // Handle Reserve Wish Buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('reserve-wish-btn')) {
+        this.openReserveDialog(e.target);
+      }
+    });
+
+    // Handle Unreserve Buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('unreserve-wish-btn')) {
+        this.handleUnreserveWish(e.target);
+      }
+    });
+
+    // Handle Reserve Form Submit
+    const reserveForm = document.getElementById('reserveWishForm');
+    if (reserveForm) {
+      reserveForm.addEventListener('submit', (e) => this.handleReserveWish(e));
+    }
   }
 
   async handleAddWish(event) {
@@ -475,6 +499,264 @@ class WishManager {
         notification.remove();
       }, 300);
     }, 3000);
+  }
+
+  openReserveDialog(button) {
+    const wishHash = button.getAttribute('data-wish-hash');
+    const row = button.closest('tr');
+    const wishTitle = row.querySelector('td:first-child strong').textContent;
+
+    const dialog = document.getElementById('reserveDialog');
+    const hashInput = document.getElementById('reserveWishHash');
+    const titleElement = document.getElementById('reserveWishTitle');
+    const form = document.getElementById('reserveWishForm');
+
+    if (dialog && hashInput && titleElement && form) {
+      hashInput.value = wishHash;
+      titleElement.textContent = `"${wishTitle}" reservieren`;
+      form.reset();
+
+      // Befülle Name-Feld mit gespeichertem Namen
+      const savedName = this.getGuestName();
+      const guestNameInput = document.getElementById('guestName');
+      if (guestNameInput && savedName) {
+        guestNameInput.value = savedName;
+      }
+
+      dialog.showModal();
+    }
+  }
+
+  async handleReserveWish(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    const submitButton = event.target.querySelector('button[type="submit"]');
+    const wishHash = formData.get('wishHash');
+    const guestName = formData.get('guestName');
+    const message = formData.get('message');
+
+    if (!guestName || !wishHash) {
+      this.showError('Name ist erforderlich');
+      return;
+    }
+
+    // Deaktiviere Button
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.textContent = 'Reserviere...';
+    }
+
+    try {
+      const response = await fetch('/api/reservewish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Hash: wishHash,
+          GuestName: guestName,
+          Message: message || ''
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        this.showError('Fehler: ' + data.error);
+      } else if (data.success) {
+        this.showSuccess('Wunsch erfolgreich reserviert!');
+
+        // Speichere Gastname im Cookie
+        this.saveGuestName(guestName);
+
+        // Speichere Reservierung in Cookie
+        this.saveReservation(wishHash, data.reservation.id);
+
+        // Aktualisiere UI
+        const row = document.querySelector(`tr[data-wish-hash="${wishHash}"]`);
+        if (row) {
+          const reservationCell = row.querySelector('.reservation-status');
+          if (reservationCell) {
+            const reservedSpan = document.createElement('span');
+            reservedSpan.className = 'reserved';
+            reservedSpan.setAttribute('data-reservation-id', data.reservation.id);
+            reservedSpan.textContent = `Reserviert von ${this.escapeHtml(guestName)}`;
+
+            // Füge Aufheben-Button hinzu
+            const unreserveBtn = document.createElement('button');
+            unreserveBtn.type = 'button';
+            unreserveBtn.className = 'unreserve-wish-btn';
+            unreserveBtn.setAttribute('data-wish-hash', wishHash);
+            unreserveBtn.setAttribute('data-reservation-id', data.reservation.id);
+            unreserveBtn.textContent = 'Aufheben';
+            unreserveBtn.style.marginLeft = '10px';
+
+            reservedSpan.appendChild(unreserveBtn);
+            reservationCell.innerHTML = '';
+            reservationCell.appendChild(reservedSpan);
+          }
+        }
+
+        // Schließe Dialog
+        const dialog = document.getElementById('reserveDialog');
+        if (dialog) {
+          dialog.close();
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      this.showError('Fehler beim Reservieren');
+    } finally {
+      // Reaktiviere Button
+      if (submitButton) {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Reservieren';
+      }
+    }
+  }
+
+  // Cookie-Hilfsfunktionen
+  getReservations() {
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith(this.reservationCookieName + '='));
+
+    if (!cookie) return {};
+
+    try {
+      return JSON.parse(decodeURIComponent(cookie.split('=')[1]));
+    } catch (e) {
+      return {};
+    }
+  }
+
+  saveReservation(wishHash, reservationId) {
+    const reservations = this.getReservations();
+    reservations[wishHash] = reservationId;
+
+    // Cookie für 1 Jahr speichern
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+
+    document.cookie = `${this.reservationCookieName}=${encodeURIComponent(JSON.stringify(reservations))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
+
+  removeReservation(wishHash) {
+    const reservations = this.getReservations();
+    delete reservations[wishHash];
+
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+
+    document.cookie = `${this.reservationCookieName}=${encodeURIComponent(JSON.stringify(reservations))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
+
+  isMyReservation(wishHash, reservationId) {
+    const reservations = this.getReservations();
+    return reservations[wishHash] == reservationId;
+  }
+
+  getGuestName() {
+    const cookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith(this.guestNameCookieName + '='));
+
+    if (!cookie) return '';
+
+    try {
+      return decodeURIComponent(cookie.split('=')[1]);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  saveGuestName(name) {
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+
+    document.cookie = `${this.guestNameCookieName}=${encodeURIComponent(name)}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
+
+  prefillGuestName() {
+    const guestNameInput = document.getElementById('guestName');
+    if (guestNameInput) {
+      const savedName = this.getGuestName();
+      if (savedName) {
+        guestNameInput.value = savedName;
+      }
+    }
+  }
+
+  updateReservationButtons() {
+    const reservations = this.getReservations();
+
+    document.querySelectorAll('.reservation-status .reserved').forEach(span => {
+      const reservationId = span.getAttribute('data-reservation-id');
+      const row = span.closest('tr');
+      const wishHash = row ? row.getAttribute('data-wish-hash') : null;
+
+      if (wishHash && reservationId && this.isMyReservation(wishHash, reservationId)) {
+        // Zeige "Aufheben"-Button für eigene Reservierungen
+        const unreserveBtn = document.createElement('button');
+        unreserveBtn.type = 'button';
+        unreserveBtn.className = 'unreserve-wish-btn';
+        unreserveBtn.setAttribute('data-wish-hash', wishHash);
+        unreserveBtn.setAttribute('data-reservation-id', reservationId);
+        unreserveBtn.textContent = 'Aufheben';
+        unreserveBtn.style.marginLeft = '10px';
+
+        span.appendChild(unreserveBtn);
+      }
+    });
+  }
+
+  async handleUnreserveWish(button) {
+    const wishHash = button.getAttribute('data-wish-hash');
+    const reservationId = button.getAttribute('data-reservation-id');
+
+    if (!confirm('Möchtest du deine Reservierung wirklich aufheben?')) {
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = 'Wird aufgehoben...';
+
+    try {
+      const response = await fetch('/api/unreservewish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          Hash: wishHash,
+          ReservationID: parseInt(reservationId)
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        this.showError('Fehler: ' + data.error);
+        button.disabled = false;
+        button.textContent = 'Aufheben';
+      } else if (data.success) {
+        this.showSuccess('Reservierung wurde aufgehoben');
+
+        // Entferne aus Cookie
+        this.removeReservation(wishHash);
+
+        // Aktualisiere UI
+        const row = button.closest('tr');
+        if (row) {
+          const reservationCell = row.querySelector('.reservation-status');
+          if (reservationCell) {
+            reservationCell.innerHTML = `<button type="button" class="reserve-wish-btn" data-wish-hash="${wishHash}">Reservieren</button>`;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      this.showError('Fehler beim Aufheben der Reservierung');
+      button.disabled = false;
+      button.textContent = 'Aufheben';
+    }
   }
 }
 
