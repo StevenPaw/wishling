@@ -7,7 +7,6 @@
             <section class="section--Wishlist">
                 <div class="section_content">
                     <h1 class="editable-wishlist" data-field="Title" data-owner-hash="$Wishlist.OwnerHash">$Wishlist.Title</h1>
-                <button onclick="document.getElementById('editListDialog').showModal();">bearbeiten</button>
                     <p>Wunschliste von <span class="editable-wishlist" data-field="Username" data-owner-hash="$Wishlist.OwnerHash">$Wishlist.Username</span></p>
                     <div class="section_wishlist_description editable-wishlist" data-field="Description" data-owner-hash="$Wishlist.OwnerHash">
                         $Wishlist.Description
@@ -118,11 +117,6 @@
                     <button onclick="navigator.clipboard.writeText('$ViewLink(true)')">Link kopieren</button>
                     <button onclick="document.getElementById('shareDialog').close();" value="close">X</button>
                 </form>
-            </dialog>
-            <dialog id="editListDialog">
-                <h2>Wunschliste bearbeiten</h2>
-                <button type="button" onclick="document.getElementById('editListDialog').close();" value="close" style="float: right;">X</button>
-                $Top.EditWishlistForm
             </dialog>
         </main>
         <% include Footer %>
