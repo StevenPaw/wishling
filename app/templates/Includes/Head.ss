@@ -25,11 +25,11 @@
 
     <link rel="manifest" href="site.webmanifest" />
 
-    <link rel="apple-touch-icon" sizes="120x120" href="/_resources/app/client/icons/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/_resources/app/client/icons/favicon.svg" />
-    <link rel="mask-icon" href="/_resources/app/client/icons/favicon.svg" color="#4E9DAE" />
+    <link rel="apple-touch-icon" sizes="120x120" href="/_resources/app/client/icons/wishling_favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/_resources/app/client/icons/wishling_favicon.svg" />
+    <link rel="mask-icon" href="/_resources/app/client/icons/wishling_favicon.svg" color="#4E9DAE" />
     <meta name="msapplication-TileColor" content="#d54f27" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/_resources/app/client/icons/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/_resources/app/client/icons/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/_resources/app/client/icons/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/_resources/app/client/icons/wishling_favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/_resources/app/client/icons/wishling_favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/_resources/app/client/icons/wishling_favicon.svg" />
 </head>

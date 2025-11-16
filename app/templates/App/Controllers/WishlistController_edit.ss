@@ -2,15 +2,26 @@
 <html lang="$CurrentLocale">
     <% include Head %>
     <body>
-        <% include Header %>
+        <header class="area_header" id="PageTop">
+            <div class="section_content">
+                <a href="/" class="logo">
+                    <img src="/_resources/app/client/icons/wishling_logo.svg" alt="Wishling Logo" />
+                </a>
+                <div class="section_actions">
+                    <button class="button--icon-link" onclick="navigator.clipboard.writeText('$ViewLink(true)')">Link kopieren</button>
+                    <!-- Teilen Button -->
+                     <button class="button--icon-share" onclick="navigator.share({ title: 'Schau auf meine Wunschliste', url: '$ViewLink(true)' })">Liste teilen</button>
+                </div>
+            </div>
+        </header>
         <main class="area_content main">
             <section class="section--Wishlist">
                 <div class="section_content">
-                    <h1 class="editable-wishlist" data-field="Title" data-owner-hash="$Wishlist.OwnerHash">$Wishlist.Title</h1>
-                    <p>Wunschliste von <span class="editable-wishlist" data-field="Username" data-owner-hash="$Wishlist.OwnerHash">$Wishlist.Username</span></p>
-                    <div class="section_wishlist_description editable-wishlist" data-field="Description" data-owner-hash="$Wishlist.OwnerHash">
+                    <h1 class="wishlist_title editable-wishlist editable_icon" data-field="Title" data-owner-hash="$Wishlist.OwnerHash">$Wishlist.Title</h1>
+                    <div class="wishlist_description editable-wishlist editable_icon" data-field="Description" data-owner-hash="$Wishlist.OwnerHash">
                         $Wishlist.Description
                     </div>
+                    <p class="wishlist_meta">Wunschliste von <span class="editable-wishlist editable_icon" data-field="Username" data-owner-hash="$Wishlist.OwnerHash">$Wishlist.Username</span></p>
                     <% if $Wishes.exists %>
                         <table class="wishlist_items">
                             <thead>
@@ -30,7 +41,7 @@
                                         <td class="editable" data-field="Price"><% if $Price %>€ $Price<% end_if %></td>
                                         <td class="editable" data-field="URL">
                                             <% if $URL %>
-                                                <a href="$URL" target="_blank" rel="noopener">Zum Produkt</a>
+                                                <a href="$URL" target="_blank" rel="noopener">$URL</a>
                                             <% else %>-<% end_if %>
                                         </td>
                                         <td>
@@ -105,19 +116,8 @@
                             </form>
                         <% end_with %>
                     <% end_if %>
-
-                    <button onclick="document.getElementById('shareDialog').showModal();">Wunschliste teilen</button>
                 </div>
             </section>
-            <dialog id="shareDialog">
-                <form method="dialog">
-                    <h2>Wunschliste teilen</h2>
-                    <p>Teile den folgenden Link, um anderen Zugriff auf deine Wunschliste zu geben:</p>
-                    <input type="text" value="$ViewLink(true)" readonly />
-                    <button onclick="navigator.clipboard.writeText('$ViewLink(true)')">Link kopieren</button>
-                    <button onclick="document.getElementById('shareDialog').close();" value="close">X</button>
-                </form>
-            </dialog>
         </main>
         <% include Footer %>
     </body>

@@ -1,5 +1,60 @@
 body{
     font-family: 'Quicksand', sans-serif;
     font-size: 18px;
-    color: white;
+    color: var(--ColorText);
+
+    button {
+        padding: 10px 15px;
+        border: 1px solid var(--ColorGray);
+        border-radius: 10px;
+        background-color: transparent;
+        color: var(--ColorText);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.button--icon-share {
+            background-color: var(--ColorPrimary);
+            border: 1px solid transparent;
+
+            &::before {
+                content: url('/_resources/app/client/icons/actions/action_share.svg');
+                display: inline-block;
+                margin-right: 10px;
+                padding: 0;
+                height: 25px;
+                width: 25px;
+            }
+        }
+
+        &.button--icon-link {
+            &::before {
+                content: url('/_resources/app/client/icons/actions/action_link.svg');
+                display: inline-block;
+                margin-right: 10px;
+                padding: 0;
+                height: 25px;
+                width: 25px;
+            }
+        }
+    }
+
+    .editable_icon{
+        position: relative;
+
+        &::after{
+            content: '';
+            background-image: url('/_resources/app/client/icons/actions/action_edit.svg');
+            background-size: contain;
+            background-position: center;
+            display: block;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            height: 16px;
+            width: 16px;
+            opacity: 0.2;
+        }
+    }
 }

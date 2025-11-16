@@ -1,4 +1,39 @@
 header {
-    background-color: var(--ColorGraySuperDark);
+    background-color: var(--ColorBlack);
     color: var(--ColorWhite);
+
+    .section_content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+
+        .logo {
+            height: 60px;
+            width: auto;
+
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                display: block;
+            }
+        }
+
+        .section_actions{
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: flex-end;
+
+            input {
+                padding: 10px 5px;
+                border: 1px solid var(--ColorGray);
+                border-radius: 10px;
+                background-color: transparent;
+                color: var(--ColorText);
+                font-weight: 500;
+            }
+        }
+    }
 }

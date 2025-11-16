@@ -39,3 +39,73 @@
         color: white;
     }
 }
+
+section.section--Wishlist {
+    .wishlist_title {
+        margin-bottom: 20px;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--ColorWhite);
+        border: 1px solid var(--ColorDarkGray);
+        padding: 10px;
+        border-radius: 10px;
+        padding-right: 40px;
+    }
+
+    .wishlist_meta{
+        margin-bottom: 40px;
+        color: var(--ColorText);
+
+        .editable_icon{
+            border: 1px solid var(--ColorDarkGray);
+            padding: 10px;
+            border-radius: 10px;
+            padding-right: 40px;
+        }
+    }
+
+    .wishlist_description {
+        margin-bottom: 30px;
+        font-size: 16px;
+        color: var(--ColorText);
+        border: 1px solid var(--ColorDarkGray);
+        padding: 10px;
+        border-radius: 10px;
+        padding-right: 40px;
+    }
+
+    .wishlist_items{
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 10px;
+        overflow: hidden;
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--ColorDarkGray);
+            color: var(--ColorText);
+        }
+
+        th {
+            background-color: var(--ColorSurface);
+        }
+
+        tr:hover {
+            background-color: var(--ColorDarkGray);
+        }
+
+        .addnew_form{
+            background-color: var(--ColorSurface);
+            border-radius: 0 10px 10px 0;
+
+            input {
+                background-color: var(--ColorBackground);
+                border: 1px solid var(--ColorGray);
+                border-radius: 5px;
+                padding: 8px;
+                color: var(--ColorText);
+            }
+        }
+    }
+}
