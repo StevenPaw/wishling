@@ -133,6 +133,7 @@ class ApiController extends Controller
         if (isset($data['Title'])) $wishlist->Title = $data['Title'];
         if (isset($data['Description'])) $wishlist->Description = $data['Description'];
         if (isset($data['Username'])) $wishlist->Username = $data['Username'];
+        if (isset($data['DefaultSort'])) $wishlist->DefaultSort = $data['DefaultSort'];
 
         try {
             $wishlist->write();

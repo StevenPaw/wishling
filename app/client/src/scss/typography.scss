@@ -3,7 +3,7 @@ body{
     font-size: 18px;
     color: var(--ColorText);
 
-    button {
+    button, .button {
         padding: 10px 15px;
         border: 1px solid var(--ColorGray);
         border-radius: 10px;
@@ -57,6 +57,26 @@ body{
         &.button--icon-add {
             &::before {
                 content: url('/_resources/app/client/icons/actions/action_add.svg');
+                display: inline-block;
+                padding: 0;
+                height: 25px;
+                width: 25px;
+            }
+        }
+
+        &.button--icon-open {
+            &::before {
+                content: url('/_resources/app/client/icons/actions/action_open.svg');
+                display: inline-block;
+                padding: 0;
+                height: 25px;
+                width: 25px;
+            }
+        }
+
+        &.button--icon-reserve {
+            &::before {
+                content: url('/_resources/app/client/icons/actions/action_reserve.svg');
                 display: inline-block;
                 padding: 0;
                 height: 25px;

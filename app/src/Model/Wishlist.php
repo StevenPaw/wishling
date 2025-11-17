@@ -17,6 +17,7 @@ class Wishlist extends DataObject
         'Active' => 'Boolean',
         'OwnerHash' => 'Varchar(64)',
         'Hash' => 'Varchar(64)',
+        'DefaultSort' => 'Varchar(50)',
     ];
 
     private static $has_many = [

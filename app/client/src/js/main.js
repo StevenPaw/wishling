@@ -135,6 +135,8 @@ class WishManager {
     this.bindEvents();
     this.updateReservationButtons();
     this.prefillGuestName();
+    this.currentSort = { field: null, direction: 'asc' };
+    this.applyDefaultSort();
   }
 
   bindEvents() {
@@ -183,6 +185,34 @@ class WishManager {
     const reserveForm = document.getElementById('reserveWishForm');
     if (reserveForm) {
       reserveForm.addEventListener('submit', (e) => this.handleReserveWish(e));
+    }
+
+    // Handle Sortable Headers
+    document.querySelectorAll('.items_cell--sortable').forEach(header => {
+      header.addEventListener('click', (e) => {
+        const field = e.target.getAttribute('data-sort-field');
+        if (field) {
+          this.sortWishes(field);
+        }
+      });
+    });
+
+    // Handle Default Sort Select
+    const defaultSortSelect = document.getElementById('defaultSortSelect');
+    if (defaultSortSelect) {
+      defaultSortSelect.addEventListener('change', (e) => this.handleDefaultSortChange(e));
+    }
+
+    // Handle Guest Sort Select
+    const guestSortSelect = document.getElementById('guestSortSelect');
+    if (guestSortSelect) {
+      guestSortSelect.addEventListener('change', (e) => this.handleGuestSortChange(e));
+    }
+
+    // Handle Search Input
+    const searchInput = document.getElementById('wishSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => this.handleSearch(e.target.value));
     }
   }
 
@@ -260,44 +290,50 @@ class WishManager {
   }
 
   addWishToTable(wish) {
-    const tbody = document.getElementById('wishlist-body');
-    if (!tbody) return;
+    const wishlistItems = document.querySelector('.wishlist_items');
+    if (!wishlistItems) return;
 
     // Entferne "Noch keine Wünsche" Nachricht falls vorhanden
-    const emptyMessage = tbody.querySelector('tr td[colspan]');
+    const emptyMessage = wishlistItems.querySelector('.items_empty');
     if (emptyMessage) {
-      emptyMessage.parentElement.remove();
+      emptyMessage.remove();
     }
 
-    // Erstelle neue Tabellenzeile
-    const tr = document.createElement('tr');
-    tr.className = 'wishlist_item';
-    tr.setAttribute('data-wish-hash', wish.Hash);
-
     // Formatiere Preis
-    const priceDisplay = wish.Price ? `${parseFloat(wish.Price).toFixed(2)} €` : '-';
+    const priceDisplay = wish.Price ? `€ ${parseFloat(wish.Price).toFixed(2)}` : '';
 
-    // Erstelle Link falls vorhanden
-    const linkDisplay = wish.URL
-      ? `<a href="${this.escapeHtml(wish.URL)}" target="_blank" rel="noopener noreferrer">Link</a>`
-      : '-';
+    // Erstelle URL-Anzeige mit Icon
+    let urlDisplay = '<span class="editable url-text" data-field="URL">-</span>';
+    if (wish.URL && wish.URL.trim() !== '') {
+      urlDisplay = `
+        <span class="editable url-text" data-field="URL">${this.escapeHtml(wish.URL)}</span>
+        <a href="${this.escapeHtml(wish.URL)}" target="_blank" rel="noopener" class="button url-icon button--icon-open" title="Link öffnen"></a>
+      `;
+    }
 
-    tr.innerHTML = `
-      <td><strong>${this.escapeHtml(wish.Title)}</strong></td>
-      <td>${this.escapeHtml(wish.Description || '')}</td>
-      <td>${priceDisplay}</td>
-      <td>${linkDisplay}</td>
-      <td>
-        <button type="button" class="archive-wish-btn" data-wish-hash="${wish.Hash}">Archivieren</button>
-      </td>
+    // Erstelle neue Zeile
+    const row = document.createElement('div');
+    row.className = 'items_row';
+    row.setAttribute('data-wish-hash', wish.Hash);
+
+    row.innerHTML = `
+      <div class="items_cell editable" data-field="Title">${this.escapeHtml(wish.Title)}</div>
+      <div class="items_cell editable" data-field="Description">${this.escapeHtml(wish.Description || '')}</div>
+      <div class="items_cell editable" data-field="Price">${priceDisplay}</div>
+      <div class="items_cell items_cell--limited items_cell--url" data-field="URL">
+        ${urlDisplay}
+      </div>
+      <div class="items_cell items_cell--actions">
+        <button type="button" class="archive-wish-btn button--icon-archive" data-wish-hash="${wish.Hash}"></button>
+      </div>
     `;
 
-    // Füge vor dem Formular ein (letztes tr ist das Formular)
-    const formRow = tbody.querySelector('tr.addnew_form');
+    // Füge vor dem Formular ein
+    const formRow = wishlistItems.querySelector('.addnew_form');
     if (formRow) {
-      tbody.insertBefore(tr, formRow);
+      wishlistItems.insertBefore(row, formRow);
     } else {
-      tbody.appendChild(tr);
+      wishlistItems.appendChild(row);
     }
   }
 
@@ -332,12 +368,33 @@ class WishManager {
       } else if (data.success) {
         this.showSuccess('Wunsch wurde archiviert');
 
-        // Entferne Zeile aus der Tabelle
-        const row = button.closest('tr');
+        // Entferne Zeile aus der Tabelle/Liste
+        const row = button.closest('tr, .items_row');
         if (row) {
           row.style.opacity = '0';
           row.style.transition = 'opacity 0.3s';
-          setTimeout(() => row.remove(), 300);
+          setTimeout(() => {
+            row.remove();
+
+            // Prüfe ob Liste jetzt leer ist
+            const wishlistItems = document.querySelector('.wishlist_items');
+            if (wishlistItems) {
+              const remainingWishes = wishlistItems.querySelectorAll('.items_row:not(.items_row--header):not(.addnew_form)');
+              if (remainingWishes.length === 0) {
+                // Füge Empty-State hinzu
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'items_empty';
+                emptyMessage.innerHTML = '<p>Füge jetzt deinen ersten Wunsch hinzu!</p>';
+
+                const formRow = wishlistItems.querySelector('.addnew_form');
+                if (formRow) {
+                  wishlistItems.insertBefore(emptyMessage, formRow);
+                } else {
+                  wishlistItems.appendChild(emptyMessage);
+                }
+              }
+            }
+          }, 300);
         }
       }
     } catch (error) {
@@ -346,6 +403,273 @@ class WishManager {
       button.disabled = false;
       button.textContent = 'Archivieren';
     }
+  }
+
+  sortWishes(field, skipToggle = false) {
+    const wishlistItems = document.querySelector('.wishlist_items');
+    if (!wishlistItems) return;
+
+    // Toggle Sortierrichtung wenn gleiches Feld (außer bei Default-Sort)
+    if (!skipToggle) {
+      if (this.currentSort.field === field) {
+        this.currentSort.direction = this.currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.currentSort.field = field;
+        this.currentSort.direction = 'asc';
+      }
+    }
+
+    // Hole alle Wish-Zeilen (nicht Header, nicht Form, nicht Empty)
+    const rows = Array.from(wishlistItems.querySelectorAll('.items_row:not(.items_row--header):not(.addnew_form):not(.items_empty)'));
+
+    if (rows.length === 0) return;
+
+    // Sortiere Zeilen
+    rows.sort((a, b) => {
+      let aValue, bValue;
+
+      if (field === 'Title') {
+        aValue = a.querySelector('[data-field="Title"]')?.textContent.trim().toLowerCase() || '';
+        bValue = b.querySelector('[data-field="Title"]')?.textContent.trim().toLowerCase() || '';
+        return this.currentSort.direction === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      } else if (field === 'Price') {
+        const aPriceText = a.querySelector('[data-field="Price"]')?.textContent.trim() || '';
+        const bPriceText = b.querySelector('[data-field="Price"]')?.textContent.trim() || '';
+
+        aValue = aPriceText ? parseFloat(aPriceText.replace('€', '').trim()) : 0;
+        bValue = bPriceText ? parseFloat(bPriceText.replace('€', '').trim()) : 0;
+
+        return this.currentSort.direction === 'asc'
+          ? aValue - bValue
+          : bValue - aValue;
+      }
+
+      return 0;
+    });
+
+    // Füge sortierte Zeilen wieder ein mit Animation
+    const formRow = wishlistItems.querySelector('.addnew_form');
+
+    // Fade out
+    rows.forEach(row => {
+      row.style.opacity = '0';
+      row.style.transition = 'opacity 0.2s ease-out';
+    });
+
+    // Nach Fade-out neu sortieren und Fade-in
+    setTimeout(() => {
+      rows.forEach(row => {
+        if (formRow) {
+          wishlistItems.insertBefore(row, formRow);
+        } else {
+          wishlistItems.appendChild(row);
+        }
+      });
+
+      // Fade in mit leichter Verzögerung für jeden
+      rows.forEach((row, index) => {
+        setTimeout(() => {
+          row.style.opacity = '1';
+          row.style.transition = 'opacity 0.3s ease-in';
+        }, index * 30); // Gestaffelte Animation
+      });
+    }, 200);
+
+    // Update Header-Anzeige
+    this.updateSortIndicators(field);
+  }
+
+  updateSortIndicators(activeField) {
+    document.querySelectorAll('.items_cell--sortable').forEach(header => {
+      const field = header.getAttribute('data-sort-field');
+      header.classList.remove('sorted-asc', 'sorted-desc');
+
+      if (field === activeField) {
+        header.classList.add(`sorted-${this.currentSort.direction}`);
+      }
+    });
+  }
+
+  applyDefaultSort() {
+    // Edit-View: Dropdown-basiert
+    const defaultSortSelect = document.getElementById('defaultSortSelect');
+    if (defaultSortSelect && defaultSortSelect.value) {
+      const [field, direction] = defaultSortSelect.value.split('-');
+      if (field && direction) {
+        this.currentSort.field = field;
+        this.currentSort.direction = direction;
+        this.sortWishes(field, true);
+      }
+      return;
+    }
+
+    // Guest-View: data-attribute-basiert
+    const sectionContent = document.querySelector('.section_content[data-default-sort]');
+    if (sectionContent) {
+      const defaultSort = sectionContent.getAttribute('data-default-sort');
+      if (defaultSort) {
+        const [field, direction] = defaultSort.split('-');
+        if (field && direction) {
+          this.currentSort.field = field;
+          this.currentSort.direction = direction;
+          this.sortWishesGuest(field);
+        }
+      }
+    }
+  }
+
+  async handleDefaultSortChange(event) {
+    const value = event.target.value;
+    const ownerHash = event.target.getAttribute('data-owner-hash');
+
+    if (!ownerHash) return;
+
+    try {
+      const response = await fetch('/api/updatewishlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          OwnerHash: ownerHash,
+          DefaultSort: value
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        this.showSuccess('Standardsortierung gespeichert');
+
+        // Wende neue Sortierung an
+        if (value) {
+          const [field, direction] = value.split('-');
+          if (field && direction) {
+            this.currentSort.field = field;
+            this.currentSort.direction = direction;
+            this.sortWishes(field, true);
+          }
+        }
+      } else {
+        this.showError('Fehler: ' + data.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      this.showError('Fehler beim Speichern');
+    }
+  }
+
+  sortWishesGuest(field) {
+    const wishlistItems = document.querySelector('.wishlist_items');
+    if (!wishlistItems) return;
+
+    const rows = Array.from(wishlistItems.querySelectorAll('.items_row:not(.items_row--header)'));
+    if (rows.length === 0) return;
+
+    // Sortiere Zeilen
+    rows.sort((a, b) => {
+      let aValue, bValue;
+
+      if (field === 'Title') {
+        const aTitleCell = a.querySelector('[data-field="Title"]');
+        const bTitleCell = b.querySelector('[data-field="Title"]');
+        aValue = aTitleCell?.textContent.trim().toLowerCase() || '';
+        bValue = bTitleCell?.textContent.trim().toLowerCase() || '';
+        return this.currentSort.direction === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      } else if (field === 'Price') {
+        const aPriceCell = a.querySelector('[data-field="Price"]');
+        const bPriceCell = b.querySelector('[data-field="Price"]');
+        const aPriceText = aPriceCell?.textContent.trim() || '';
+        const bPriceText = bPriceCell?.textContent.trim() || '';
+
+        aValue = aPriceText && aPriceText !== '-' ? parseFloat(aPriceText.replace('€', '').trim()) : 0;
+        bValue = bPriceText && bPriceText !== '-' ? parseFloat(bPriceText.replace('€', '').trim()) : 0;
+
+        return this.currentSort.direction === 'asc'
+          ? aValue - bValue
+          : bValue - aValue;
+      }
+
+      return 0;
+    });
+
+    // Fade out
+    rows.forEach(row => {
+      row.style.opacity = '0';
+      row.style.transition = 'opacity 0.2s ease-out';
+    });
+
+    // Nach Fade-out neu sortieren und Fade-in
+    setTimeout(() => {
+      rows.forEach(row => {
+        wishlistItems.appendChild(row);
+      });
+
+      // Fade in
+      rows.forEach((row, index) => {
+        setTimeout(() => {
+          row.style.opacity = '1';
+          row.style.transition = 'opacity 0.3s ease-in';
+        }, index * 30);
+      });
+    }, 200);
+  }
+
+  handleGuestSortChange(event) {
+    const value = event.target.value;
+
+    if (!value) {
+      // Standard-Sortierung anwenden
+      this.applyDefaultSort();
+      return;
+    }
+
+    const [field, direction] = value.split('-');
+    if (field && direction) {
+      this.currentSort.field = field;
+      this.currentSort.direction = direction;
+      this.sortWishesGuest(field);
+    }
+  }
+
+  handleSearch(searchTerm) {
+    const term = searchTerm.toLowerCase().trim();
+
+    // Suche in beiden View-Typen
+    const editRows = document.querySelectorAll('.wishlist_items .items_row:not(.items_row--header):not(.addnew_form)');
+    const guestRows = document.querySelectorAll('.wishlist_items .items_row:not(.items_row--header)');
+
+    const rows = editRows.length > 0 ? editRows : guestRows;
+
+    rows.forEach(row => {
+      if (!term) {
+        // Zeige alle wenn Suche leer
+        row.style.display = '';
+        return;
+      }
+
+      // Hole Title und Description aus data-Attributen oder Text
+      let title = row.getAttribute('data-wish-title') || '';
+      let description = row.getAttribute('data-wish-description') || '';
+
+      // Fallback: Lese aus DOM wenn data-Attribute nicht vorhanden
+      if (!title) {
+        const titleCell = row.querySelector('[data-field="Title"]');
+        title = titleCell ? titleCell.textContent.trim() : '';
+      }
+      if (!description) {
+        const descCell = row.querySelector('[data-field="Description"]');
+        description = descCell ? descCell.textContent.trim() : '';
+      }
+
+      // Suche in Title und Description
+      const matchesTitle = title.toLowerCase().includes(term);
+      const matchesDescription = description.toLowerCase().includes(term);
+
+      row.style.display = (matchesTitle || matchesDescription) ? '' : 'none';
+    });
   }
 
   escapeHtml(text) {
@@ -362,7 +686,13 @@ class WishManager {
 
   makeEditable(element, type) {
     const field = element.getAttribute('data-field');
-    const currentValue = element.textContent.trim().replace(/^€\s*/, ''); // Entferne € Zeichen
+    let currentValue = element.textContent.trim().replace(/^€\s*/, ''); // Entferne € Zeichen
+
+    // Für URL-Felder: Wenn es ein span.url-text ist, nimm dessen Wert
+    if (field === 'URL' && element.classList.contains('url-text')) {
+      currentValue = element.textContent.trim();
+      if (currentValue === '-') currentValue = '';
+    }
 
     // Erstelle Input-Feld
     const input = document.createElement('input');
@@ -425,9 +755,23 @@ class WishManager {
         if (field === 'Price') {
           element.textContent = value ? `€ ${parseFloat(value).toFixed(2)}` : '';
         } else if (field === 'URL') {
-          element.innerHTML = value
-            ? `<a href="${this.escapeHtml(value)}" target="_blank" rel="noopener">Zum Produkt</a>`
-            : '-';
+          // Finde die Parent-Zelle und aktualisiere komplett
+          const cell = element.closest('.items_cell--url');
+          if (cell) {
+            if (value) {
+              cell.innerHTML = `
+                <span class="editable url-text" data-field="URL">${this.escapeHtml(value)}</span>
+                <a href="${this.escapeHtml(value)}" target="_blank" rel="noopener" class="button url-icon button--icon-open" title="Link öffnen"></a>
+              `;
+            } else {
+              cell.innerHTML = `<span class="editable url-text" data-field="URL">-</span>`;
+            }
+          } else {
+            // Fallback für alte Struktur
+            element.innerHTML = value
+              ? `<a href="${this.escapeHtml(value)}" target="_blank" rel="noopener">Zum Produkt</a>`
+              : '-';
+          }
         } else {
           element.textContent = value;
         }
