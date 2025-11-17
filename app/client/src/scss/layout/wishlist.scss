@@ -78,33 +78,41 @@ section.section--Wishlist {
         width: 100%;
         border-collapse: collapse;
         border-radius: 10px;
-        overflow: hidden;
 
-        th, td {
+        .items_row {
+            display: grid;
+            grid-template-columns: repeat(3, 20%) 2fr 1fr;
+            gap: 10px;
+            align-items: center;
             padding: 12px 15px;
             text-align: left;
             border-bottom: 1px solid var(--ColorDarkGray);
             color: var(--ColorText);
-        }
+            border: 1px solid var(--ColorDarkGray);
 
-        th {
-            background-color: var(--ColorSurface);
-        }
+            &.items_row--header{
+                border-radius: 10px 10px 0 0;
+                background-color: var(--ColorDarkGray);
+            }
 
-        tr:hover {
-            background-color: var(--ColorDarkGray);
-        }
+            &.addnew_form{
+                background-color: var(--ColorDarkGray);
+                border-radius: 0 0 10px 10px;
 
-        .addnew_form{
-            background-color: var(--ColorSurface);
-            border-radius: 0 10px 10px 0;
+                input {
+                    background-color: var(--ColorBackground);
+                    border: 1px solid var(--ColorGray);
+                    border-radius: 5px;
+                    padding: 8px;
+                    color: var(--ColorText);
+                }
+            }
 
-            input {
-                background-color: var(--ColorBackground);
-                border: 1px solid var(--ColorGray);
-                border-radius: 5px;
-                padding: 8px;
-                color: var(--ColorText);
+            .items_cell {
+                &.items_cell--actions {
+                    text-align: right;
+                    margin-left: auto;
+                }
             }
         }
     }
