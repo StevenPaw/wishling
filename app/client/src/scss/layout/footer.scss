@@ -1,4 +1,11 @@
-footer {
-    background-color: var(--ColorGraySuperDark);
-    color: var(--ColorWhite);
+.area_footer {
+    margin-top: 60px;
+    border-top: 1px solid var(--ColorBorder);
+    color: var(--ColorTextSecondary);
+    font-size: 14px;
+
+    .section_content {
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
 }

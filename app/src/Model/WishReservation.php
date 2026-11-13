@@ -4,12 +4,20 @@ namespace App\Model;
 
 use SilverStripe\ORM\DataObject;
 
+/**
+ * Reservierung eines Wunsches durch einen Gast.
+ * Jeder Gast mit dem Link darf Reservierungen anlegen und wieder aufheben (gewollt).
+ */
 class WishReservation extends DataObject
 {
     private static $table_name = 'WishReservation';
 
+    private static $singular_name = 'Reservierung';
+
+    private static $plural_name = 'Reservierungen';
+
     private static $db = [
-        'GuestName' => 'Varchar(255)',
+        'GuestName' => 'Varchar(100)',
         'Message' => 'Text',
     ];
 
@@ -26,7 +34,6 @@ class WishReservation extends DataObject
     private static $searchable_fields = [
         'GuestName',
         'Message',
-        'Parent.Title',
     ];
 
     private static $default_sort = 'Created ASC';
@@ -34,30 +41,7 @@ class WishReservation extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-
         $fields->removeByName('ParentID');
-
         return $fields;
-    }
-
-    /**
-     * JSON-Serialisierung für API
-     */
-    public function toArray()
-    {
-        return [
-            'id' => $this->ID,
-            'guestName' => $this->GuestName,
-            'message' => $this->Message,
-            'wishTitle' => $this->Parent()->Title,
-        ];
-    }
-
-    /**
-     * Generiere Hash automatisch beim Erstellen
-     */
-    public function onBeforeWrite()
-    {
-        parent::onBeforeWrite();
     }
 }

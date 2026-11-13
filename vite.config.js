@@ -1,44 +1,53 @@
-import {defineConfig} from 'vite'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command }) => {
-    const primary_url = process.env.DDEV_PRIMARY_URL || 'http://localhost';
-    const origin = primary_url.replace(/:\d+$/, "") + `:5173`;
+export default defineConfig(() => {
+    const primaryUrl = process.env.DDEV_PRIMARY_URL || 'http://localhost';
+    const origin = primaryUrl.replace(/:\d+$/, '') + ':5173';
+
     return {
+        plugins: [
+            vue({
+                // Absolute Pfade (/_resources/...) werden von Silverstripe ausgeliefert und nicht gebündelt
+                template: { transformAssetUrls: { includeAbsolute: false } },
+            }),
+        ],
+        resolve: {
+            alias: {
+                '@': fileURLToPath(new URL('./app/client/src/js', import.meta.url)),
+            },
+        },
         server: {
-            host: "0.0.0.0",
+            host: '0.0.0.0',
             port: 5173,
             strictPort: true,
-            origin: origin,
+            origin,
             cors: {
-                origin: /https?:\/\/([A-Za-z0-9\-\.]+)?(\.ddev\.site)(?::\d+)?$/,
+                origin: /https?:\/\/([A-Za-z0-9\-.]+)?(\.ddev\.site)(?::\d+)?$/,
             },
             watch: {
-                usePolling: true, // Enable polling for file changes
-            }
+                usePolling: true,
+            },
         },
-        alias: {
-            alias: [{find: '@', replacement: './app/client/src'}],
-        },
-        // base: (command === 'build') ? '/_resources/app/client/dist/' : '/', // TODO: .env variable, only on build
         base: './',
         publicDir: 'app/client/public',
         build: {
-        // cssCodeSplit: false,
-        outDir: './app/client/dist',
-        manifest: true,
-        sourcemap: true,
-        rollupOptions: {
-            input: {
-            'main.js': './app/client/src/js/main.js',
-            'main.scss': './app/client/src/scss/main.scss',
-            'editor.scss': './app/client/src/scss/editor.scss',
+            outDir: './app/client/dist',
+            emptyOutDir: true,
+            manifest: true,
+            sourcemap: true,
+            rollupOptions: {
+                input: {
+                    'main.js': './app/client/src/js/main.js',
+                    'main.scss': './app/client/src/scss/main.scss',
+                    'editor.scss': './app/client/src/scss/editor.scss',
+                },
             },
-        },
         },
         css: {
             devSourcemap: true,
         },
-        plugins: []
-    }
-})
+    };
+});

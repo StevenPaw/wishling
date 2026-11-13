@@ -1,0 +1,102 @@
+@use "../variables" as *;
+
+$icons: (
+    share: 'action_share.svg',
+    link: 'action_link.svg',
+    archive: 'action_archive.svg',
+    add: 'action_add.svg',
+    open: 'action_open.svg',
+    reserve: 'action_reserve.svg',
+    edit: 'action_edit.svg',
+    duplicate: 'action_duplicate.svg',
+    visibility: 'visibility.svg',
+    visibility-off: 'visibility_off.svg',
+);
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid var(--ColorGray);
+    border-radius: var(--Radius);
+    background-color: transparent;
+    color: var(--ColorText);
+    font: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, border-color 0.15s, opacity 0.15s;
+
+    &:hover {
+        background-color: var(--ColorSurfaceRaised);
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &.button--primary {
+        background-color: var(--ColorPrimary);
+        border-color: transparent;
+
+        &:hover:not(:disabled) {
+            background-color: var(--ColorPrimaryDark);
+        }
+    }
+
+    &.button--ghost {
+        border-color: transparent;
+        color: var(--ColorTextSecondary);
+
+        &:hover:not(:disabled) {
+            color: var(--ColorText);
+        }
+    }
+
+    &.button--small {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    &.button--large {
+        padding: 14px 28px;
+        font-size: 18px;
+    }
+
+    &.button--block {
+        width: 100%;
+    }
+
+    @each $name, $file in $icons {
+        &.button--icon-#{$name}::before {
+            content: '';
+            display: inline-block;
+            flex-shrink: 0;
+            width: 22px;
+            height: 22px;
+            background: url('/_resources/app/client/icons/actions/#{$file}') center / contain no-repeat;
+        }
+    }
+
+    &.button--icon-only {
+        padding: 8px;
+        border-color: transparent;
+        gap: 0;
+    }
+
+    // Teilen mit Beschriftung ist hervorgehoben, als reines Icon wie die übrigen Icon-Buttons
+    &.button--icon-share:not(.button--icon-only) {
+        background-color: var(--ColorPrimary);
+        border-color: transparent;
+
+        &:hover {
+            background-color: var(--ColorPrimaryDark);
+        }
+    }
+}

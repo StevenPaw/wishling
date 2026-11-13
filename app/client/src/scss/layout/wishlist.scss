@@ -1,240 +1,577 @@
-// Notification Styles
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 10000;
-    max-width: 400px;
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.3s ease-in-out;
+@use "../variables" as *;
 
-    &.show {
-        opacity: 1;
-        transform: translateX(0);
-    }
-
-    &-success {
-        background-color: #10b981;
-        color: white;
-    }
-
-    &-error {
-        background-color: #ef4444;
-        color: white;
-    }
-
-    &-info {
-        background-color: #3b82f6;
-        color: white;
-    }
-
-    &-warning {
-        background-color: #f59e0b;
-        color: white;
+.section--Wishlist {
+    .section_content {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
 }
 
-section.section--Wishlist {
-    .wishlist_title {
-        margin-bottom: 20px;
-        font-size: 32px;
-        font-weight: 700;
-        color: var(--ColorWhite);
-        border: 1px solid var(--ColorDarkGray);
-        padding: 10px;
-        border-radius: 10px;
-        padding-right: 40px;
+// Kopfbereich (Titel, Beschreibung, Besitzer)
+.wishlist_meta_view {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.wishlist_meta_text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.wishlist_title {
+    font-size: 34px;
+    overflow-wrap: anywhere;
+}
+
+.wishlist_description {
+    color: var(--ColorTextSecondary);
+    white-space: pre-line;
+}
+
+.wishlist_title_owner {
+    margin-left: 0.25em;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--ColorTextSecondary);
+    white-space: nowrap;
+}
+
+.wishlist_meta_form {
+    padding: 20px;
+    background-color: var(--ColorSurface);
+    border: 1px solid var(--ColorBorder);
+    border-radius: var(--Radius);
+}
+
+.wishlist_toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.owner_banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 16px;
+    border: 1px solid var(--ColorPrimary);
+    border-radius: var(--Radius);
+    background-color: rgba(192, 0, 201, 0.12);
+    font-size: 15px;
+}
+
+// Suche + Sortierung
+.wishlist_controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    .wish_search {
+        flex: 1 1 260px;
+        max-width: 420px;
+    }
+}
+
+.wishlist_sort {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wishlist_sort_label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ColorTextSecondary);
+}
+
+// Wunsch-Tabelle
+.wishlist_items {
+    // Stärke | Titel | Typ | Beschreibung | Preis | Link | Aktionen
+    // Die Stärke-Spalte ist so schmal wie die Überschrift "STÄRKE ⇅"
+    --columns: 5rem minmax(0, 1.3fr) minmax(0, 0.9fr) minmax(0, 2fr) minmax(0, 0.8fr) minmax(0, 1fr) 6.5rem;
+    border: 1px solid var(--ColorBorder);
+    border-radius: var(--Radius);
+    overflow: hidden;
+
+    &.wishlist_items--guest {
+        --columns: 5rem minmax(0, 1.3fr) minmax(0, 0.9fr) minmax(0, 2fr) minmax(0, 0.8fr) minmax(0, 1fr) 11rem;
+    }
+}
+
+.items_row {
+    display: grid;
+    grid-template-columns: var(--columns);
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ColorBorder);
+    color: var(--ColorText);
+
+    &:last-child {
+        border-bottom: none;
     }
 
-    .wishlist_meta{
-        margin-bottom: 40px;
-        color: var(--ColorText);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
+    &.items_row--header {
+        background-color: var(--ColorDarkGray);
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ColorTextSecondary);
+    }
 
-        .editable_icon{
-            border: 1px solid var(--ColorDarkGray);
-            padding: 10px;
-            border-radius: 10px;
-            padding-right: 40px;
+    &.items_row--add {
+        background-color: var(--ColorDarkGray);
+    }
+
+    // Für Gäste ausgeblendet: für den Besitzer abgedunkelt sichtbar
+    &.items_row--hidden {
+        .items_cell:not(.items_cell--actions) {
+            opacity: 0.4;
         }
 
+        .items_cell:focus-within {
+            opacity: 1;
+        }
+    }
+
+    &.items_row--reserved {
+        .items_cell--priority,
+        .items_cell--title,
+        .items_cell--type,
+        .items_cell--description,
+        .items_cell--price {
+            opacity: 0.55;
+        }
+    }
+}
+
+.items_cell {
+    min-width: 0;
+    overflow-wrap: anywhere;
+
+    &.items_cell--title {
+        font-weight: 700;
+    }
+
+    &.items_cell--description {
+        font-size: 16px;
+        color: var(--ColorTextSecondary);
+        white-space: pre-line;
+    }
+
+    &.items_cell--actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+    }
+
+    &.items_cell--reservation {
+        text-align: right;
+    }
+}
+
+// Stärke des Wunsches: 5 Balken in steigender Höhe (wie eine Signalanzeige)
+.wish_priority {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 26px;
+}
+
+.wish_priority_bar {
+    display: block;
+    width: 8px;
+    padding: 0;
+    border: 1.5px solid var(--ColorGray);
+    border-radius: 2px;
+    background-color: transparent;
+    opacity: 0.6;
+    transition: background-color 0.12s, border-color 0.12s, opacity 0.12s;
+
+    @for $i from 1 through 5 {
+        &.wish_priority_bar--#{$i} {
+            height: 9px + ($i - 1) * 4px;
+        }
+    }
+
+    &.is-filled {
+        background-color: var(--ColorPrimary);
+        border-color: var(--ColorPrimary);
+        opacity: 1;
+    }
+}
+
+// Bedienbare Variante: größere Klickfläche, Vorschau beim Überfahren
+button.wish_priority_bar {
+    cursor: pointer;
+    position: relative;
+
+    // unsichtbar vergrößerte Klickfläche
+    &::after {
+        content: '';
+        position: absolute;
+        inset: -8px -2px;
+    }
+
+    &:focus-visible {
+        outline-offset: 3px;
+    }
+}
+
+.wish_priority:has(button.wish_priority_bar:hover) {
+    .wish_priority_bar {
+        background-color: var(--ColorPrimaryDark);
+        border-color: var(--ColorPrimary);
+        opacity: 1;
+    }
+
+    .wish_priority_bar:hover ~ .wish_priority_bar {
+        background-color: transparent;
+        border-color: var(--ColorGray);
+        opacity: 0.6;
+    }
+}
+
+.wish_type {
+    display: inline-block;
+    max-width: 100%;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background-color: var(--ColorSurfaceRaised);
+    border: 1px solid var(--ColorBorder);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--ColorTextSecondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.items_input {
+    padding: 8px 10px;
+}
+
+.items_placeholder {
+    color: var(--ColorGray);
+}
+
+.items_empty {
+    padding: 20px;
+    text-align: center;
+    font-style: italic;
+    color: var(--ColorTextSecondary);
+    border-bottom: 1px solid var(--ColorBorder);
+}
+
+.reserved_label {
+    font-size: 14px;
+    color: var(--ColorTextSecondary);
+}
+
+.sort_button {
+    font: inherit;
+    color: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    .sort_icon {
+        opacity: 0.5;
+    }
+
+    &.sort_button--ascending .sort_icon,
+    &.sort_button--descending .sort_icon {
+        opacity: 1;
+    }
+
+    &:hover {
+        color: var(--ColorText);
+    }
+}
+
+.wish_link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    color: var(--ColorText);
+    text-decoration: none;
+
+    &:hover .wish_link_text {
+        text-decoration: underline;
+    }
+}
+
+.wish_link_text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wish_link_icon,
+.wish_link_open {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    background: url('/_resources/app/client/icons/actions/action_openextern.svg') center / contain no-repeat;
+}
+
+// Bearbeiten direkt in der Zelle
+.editable_cell {
+    min-width: 0;
+    flex: 1 1 auto;
+
+    &.is-saving .items_input {
+        opacity: 0.6;
+    }
+}
+
+.editable_trigger {
+    display: block;
+    // Etwas größer als die Zelle, der Text bleibt aber bündig mit der Spaltenüberschrift
+    box-sizing: border-box;
+    width: calc(100% + 12px);
+    min-height: calc(1.6em + 10px);
+    margin: -5px -6px;
+    padding: 4px 5px;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    white-space: inherit;
+    overflow-wrap: anywhere;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: var(--RadiusSmall);
+    cursor: text;
+    transition: border-color 0.12s, background-color 0.12s;
+
+    &:hover {
+        border-color: var(--ColorBorder);
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+}
+
+.editable_placeholder {
+    color: var(--ColorGray);
+    font-weight: 400;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+// Mit Maus: leere Felder erst beim Überfahren der Zeile andeuten, damit die Tabelle ruhig bleibt
+@media (hover: hover) {
+    .items_row:not(:hover):not(:focus-within) .editable_placeholder {
+        opacity: 0;
+    }
+}
+
+.items_cell--url {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .wish_link_text {
+        display: block;
+    }
+}
+
+// Erste Version der Kartenansicht für kleine Bildschirme
+@media (max-width: $breakpoint-cards) {
+    // Kompakte Liste statt Tabelle: Zeilen ohne Abstand untereinander
+    .items_row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 10px 12px;
+
+        &.items_row--header {
+            display: none;
+        }
+    }
+
+    // Ansichtszeilen: Stärke + Titel | Typ + Preis | Beschreibung | Link + Aktionen
+    .items_row:not(.items_row--add):not(.items_row--header) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        column-gap: 10px;
+        row-gap: 0;
+
+        // Unsichtbare Zeilenumbrüche: nach dem Titel und nach Typ/Preis
+        &::before,
+        &::after {
+            content: '';
+            flex-basis: 100%;
+            height: 0;
+        }
+
+        &::before {
+            order: 3;
+        }
+
+        &::after {
+            order: 6;
+        }
+
+        > .items_cell:not(.items_cell--priority):not(.items_cell--title) {
+            margin-top: 4px;
+        }
+
+        .items_cell--priority {
+            order: 1;
+            flex: 0 0 auto;
+        }
+
+        .items_cell--title {
+            order: 2;
+            flex: 1 1 0;
+            min-width: 0;
+            font-size: 17px;
+        }
+
+        // Typ und Preis teilen sich eine Zeile
+        .items_cell--type {
+            order: 4;
+            flex: 0 1 auto;
+        }
+
+        .items_cell--price {
+            order: 5;
+            flex: 0 0 auto;
+            font-size: 15px;
+        }
+
+        .items_cell--description {
+            order: 7;
+            flex: 1 1 100%;
+            font-size: 14px;
+        }
+
+        .items_cell--url {
+            order: 8;
+            flex: 1 1 auto;
+            min-width: 0;
+            font-size: 15px;
+        }
+
+        .items_cell--actions {
+            order: 9;
+            flex: 0 0 auto;
+            margin-left: auto;
+            justify-content: flex-end;
+            text-align: right;
+        }
+
+        // Ohne Link rücken die Buttons rechtsbündig in die Zeile mit Typ und Preis
+        &:not(:has(.wish_link, .items_cell--url .editable_cell)) .items_cell--actions {
+            order: 5;
+        }
+
+        // Leere Beschreibung nur als kurzer Platzhalter, dann passt "+ Link" daneben
+        .items_cell--description:has(.is-empty) {
+            flex: 0 0 auto;
+        }
+
+        .items_cell--reservation {
+            flex-wrap: nowrap;
+            gap: 8px;
+        }
+    }
+
+    // Kleinere Stärke-Balken in der kompakten Ansicht
+    .items_row:not(.items_row--add):not(.items_row--header) .wish_priority {
+        height: 18px;
+        gap: 2px;
+
+        .wish_priority_bar {
+            width: 6px;
+            border-width: 1px;
+
+            @for $i from 1 through 5 {
+                &.wish_priority_bar--#{$i} {
+                    height: 6px + ($i - 1) * 3px;
+                }
+            }
+        }
+    }
+
+    .wish_type {
+        font-size: 13px;
+        padding: 1px 8px;
+    }
+
+    .items_cell {
+        &:empty,
+        &.items_cell--url:has(.items_placeholder),
+        &.items_cell--priority:has(.wish_priority--readonly):not(:has(.is-filled)) {
+            display: none;
+        }
+    }
+
+    .items_row--add .items_cell[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--ColorTextSecondary);
+    }
+
+    .items_row--add .items_cell--actions {
+        justify-content: flex-end;
+    }
+
+    // Suche und Sortierung jeweils über die volle Breite
+    .wishlist_controls {
+        .wish_search {
+            flex: 1 1 100%;
+            max-width: none;
+        }
+    }
+
+    .wishlist_sort {
+        flex: 1 1 100%;
+
         .wishlist_sort_label {
-            margin-left: 20px;
-            font-weight: 500;
+            flex-shrink: 0;
         }
 
         .wishlist_sort_select {
-            background-color: var(--ColorDarkGray);
-            color: var(--ColorText);
-            border: 1px solid var(--ColorGray);
-            border-radius: 5px;
-            padding: 8px 12px;
-            font-size: 14px;
-            cursor: pointer;
-
-            &:hover {
-                background-color: var(--ColorGray);
-            }
-
-            &:focus {
-                outline: none;
-                border-color: var(--ColorWhite);
-            }
+            flex: 1 1 auto;
+            min-width: 0;
         }
     }
 
-    .wishlist_controls {
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-
-        .wish_search {
-            flex: 1;
-            max-width: 400px;
-            background-color: var(--ColorDarkGray);
-            color: var(--ColorText);
-            border: 1px solid var(--ColorGray);
-            border-radius: 5px;
-            padding: 10px 15px;
-            font-size: 14px;
-
-            &::placeholder {
-                color: var(--ColorGray);
-                opacity: 0.7;
-            }
-
-            &:focus {
-                outline: none;
-                border-color: var(--ColorWhite);
-                background-color: var(--ColorGray);
-            }
-        }
+    .owner_banner {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .wishlist_description {
-        margin-bottom: 30px;
-        font-size: 16px;
-        color: var(--ColorText);
-        border: 1px solid var(--ColorDarkGray);
-        padding: 10px;
-        border-radius: 10px;
-        padding-right: 40px;
+    .wishlist_meta_view {
+        flex-direction: column;
     }
 
-    .wishlist_items{
-        width: 100%;
-        border-collapse: collapse;
-        border-radius: 10px;
-
-        .items_row {
-            display: grid;
-            grid-template-columns: repeat(4, 22%) 1fr;
-            gap: 10px;
-            align-items: center;
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--ColorDarkGray);
-            color: var(--ColorText);
-            border: 1px solid var(--ColorDarkGray);
-
-            &.items_row--header{
-                border-radius: 10px 10px 0 0;
-                background-color: var(--ColorDarkGray);
-            }
-
-            &.addnew_form{
-                background-color: var(--ColorDarkGray);
-                border-radius: 0 0 10px 10px;
-
-                input {
-                    background-color: var(--ColorBackground);
-                    border: 1px solid var(--ColorGray);
-                    border-radius: 5px;
-                    padding: 8px;
-                    color: var(--ColorText);
-                }
-            }
-
-            .items_cell {
-                position: relative;
-
-                &.items_cell--sortable {
-                    cursor: pointer;
-                    user-select: none;
-                    position: relative;
-                    padding-right: 20px;
-
-                    &:hover {
-                        opacity: 0.8;
-                    }
-
-                    &::after {
-                        content: '⇅';
-                        position: absolute;
-                        right: 5px;
-                        opacity: 0.5;
-                        font-size: 12px;
-                    }
-
-                    &.sorted-asc::after {
-                        content: '↑';
-                        opacity: 1;
-                    }
-
-                    &.sorted-desc::after {
-                        content: '↓';
-                        opacity: 1;
-                    }
-                }
-
-                &.items_cell--actions {
-                    text-align: right;
-                    margin-left: auto;
-                }
-
-                &.items_cell--limited {
-                    padding-right: 30px;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-
-                    a{
-                        color: var(--ColorWhite);
-                    }
-
-                    span {
-                        display: block;
-                        max-width: 100%;
-                        width: 100%;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-                }
-
-                .button--icon-open{
-                    position: absolute;
-                    right: -20px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    padding: 5px;
-                }
-            }
-        }
-
-        .items_empty{
-            padding: 10px;
-            border: 1px solid var(--ColorDarkGray);
-            text-align: center;
-            font-style: italic;
-        }
+    // Auf dem Handy steht "von X" in einer eigenen Zeile unter dem Titel
+    .wishlist_title_owner {
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+        font-size: 17px;
     }
 }

@@ -1,8 +1,6 @@
 ---
 Name: app-config
 ---
-# Admin-Backend bleibt aktiv für DataObjects und ModelAdmin
-SilverStripe\Admin\LeftAndMain:
-  # Hier kannst du spezifische Admin-Sections konfigurieren
-  extra_requirements_css: []
-  extra_requirements_javascript: []
+# Absender für System-Mails (Login-Links). Kann per WISHLING_MAIL_FROM in der .env überschrieben werden.
+SilverStripe\Control\Email\Email:
+  admin_email: 'noreply@wishling.ddev.site'

@@ -1,12 +1,25 @@
 :root {
-    --MaxWidth: 1100px;
+    --MaxWidth: 1400px;
+    --Radius: 10px;
+    --RadiusSmall: 6px;
+
     --ColorBackground: #0C0A0D;
     --ColorBlack: #000000;
     --ColorWhite: #FFFFFF;
     --ColorPrimary: #C000C9;
+    --ColorPrimaryDark: #9A00A2;
     --ColorSurface: #1E1623;
+    --ColorSurfaceRaised: #2A2030;
     --ColorGray: #A9A9A9;
     --ColorDarkGray: #141414;
+    --ColorBorder: #3A3040;
     --ColorText: #FFFFFF;
     --ColorTextSecondary: #C7C2CB;
+    --ColorSuccess: #10B981;
+    --ColorError: #EF4444;
+    --ColorInfo: #3B82F6;
+    --ColorFocus: #F0A6F4;
 }
+
+// Breakpoint, ab dem die Wunsch-Tabelle zu Karten wird
+$breakpoint-cards: 760px;

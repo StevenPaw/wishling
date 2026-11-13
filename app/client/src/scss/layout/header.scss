@@ -1,4 +1,4 @@
-header {
+.area_header {
     background-color: var(--ColorBlack);
     color: var(--ColorWhite);
 
@@ -6,34 +6,83 @@ header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 16px;
         padding: 10px 20px;
+    }
 
-        .logo {
-            height: 60px;
+    .logo {
+        display: block;
+        height: 52px;
+
+        img {
+            height: 100%;
             width: auto;
-
-            img{
-                width: 100%;
-                height: 100%;
-                object-fit: contain;
-                display: block;
-            }
+            display: block;
         }
+    }
+}
 
-        .section_actions{
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: flex-end;
+.header_nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
 
-            input {
-                padding: 10px 5px;
-                border: 1px solid var(--ColorGray);
-                border-radius: 10px;
-                background-color: transparent;
-                color: var(--ColorText);
-                font-weight: 500;
-            }
-        }
+.header_link {
+    white-space: nowrap;
+    color: var(--ColorTextSecondary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+
+    &:hover,
+    &.router-link-active {
+        color: var(--ColorText);
+    }
+}
+
+// Profil: Avatar + Name (auf dem Handy nur der Avatar)
+.header_link--profile {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header_new {
+    padding: 8px 14px;
+    font-size: 15px;
+}
+
+@media (max-width: 600px) {
+    // Auf kleinen Bildschirmen nur das Plus-Icon zeigen
+    .header_new {
+        padding: 8px;
+        gap: 0;
+    }
+
+    .header_new_label {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .area_header .section_content {
+        padding: 10px 16px;
+        gap: 10px;
+    }
+
+    .area_header .logo {
+        height: 34px;
+        min-width: 0;
+        flex-shrink: 1;
+    }
+
+    .header_nav {
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .header_profile_name {
+        display: none;
     }
 }

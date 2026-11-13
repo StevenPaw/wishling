@@ -4,19 +4,38 @@
 @use "typography.scss";
 @use "forms.scss";
 
-@use "layout/footer.scss";
+@use "components/buttons.scss";
+@use "components/toast.scss";
+@use "components/dialog.scss";
+@use "components/avatar.scss";
+@use "components/cropper.scss";
+
 @use "layout/header.scss";
+@use "layout/footer.scss";
+@use "layout/home.scss";
+@use "layout/auth.scss";
+@use "layout/lists.scss";
 @use "layout/wishlist.scss";
 
-// Reset and base styles
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    background-color: var(--ColorBackground);
 }
 
 body {
     background-color: var(--ColorBackground);
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+// Vue-Mount-Punkt bildet das Seitenraster
+.app {
     min-height: 100vh;
     display: grid;
     grid-template-columns: 100%;
@@ -25,8 +44,6 @@ body {
         "header"
         "content"
         "footer";
-    width: 100%;
-    overflow-x: hidden;
 
     .area_header {
         grid-area: header;
@@ -40,15 +57,51 @@ body {
     .area_footer {
         grid-area: footer;
     }
+}
 
-    section {
-        max-width: var(--MaxWidth);
-        margin: 0 auto;
+section {
+    max-width: var(--MaxWidth);
+    margin: 0 auto;
+}
+
+.section_content {
+    padding: 20px;
+    max-width: var(--MaxWidth);
+    margin: 0 auto;
+}
+
+:focus-visible {
+    outline: 2px solid var(--ColorFocus);
+    outline-offset: 2px;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.page_state {
+    padding: 60px 0;
+    text-align: center;
+    color: var(--ColorTextSecondary);
+
+    h1 {
+        margin-bottom: 12px;
+        color: var(--ColorText);
     }
 
-    .section_content {
-        padding: 20px;
-        max-width: var(--MaxWidth);
-        margin: 0 auto;
+    p {
+        margin-bottom: 24px;
+    }
+
+    .button {
+        display: inline-flex;
     }
 }

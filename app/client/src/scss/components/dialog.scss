@@ -1,0 +1,43 @@
+.dialog {
+    width: min(480px, calc(100vw - 32px));
+    margin: auto;
+    padding: 0;
+    border: 1px solid var(--ColorBorder);
+    border-radius: var(--Radius);
+    background-color: var(--ColorSurface);
+    color: var(--ColorText);
+
+    &::backdrop {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+}
+
+.dialog_content {
+    padding: 24px;
+}
+
+.dialog_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.dialog_close {
+    font-size: 26px;
+    line-height: 1;
+    color: var(--ColorTextSecondary);
+    background: none;
+    border: none;
+    padding: 0 4px;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--ColorText);
+    }
+}
+
+.dialog_text {
+    font-size: 15px;
+    color: var(--ColorTextSecondary);
+}

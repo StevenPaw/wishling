@@ -1,105 +1,26 @@
-body{
+body {
     font-family: 'Quicksand', sans-serif;
     font-size: 18px;
+    line-height: 1.5;
     color: var(--ColorText);
+}
 
-    button, .button {
-        padding: 10px 15px;
-        border: 1px solid var(--ColorGray);
-        border-radius: 10px;
-        background-color: transparent;
-        color: var(--ColorText);
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 700;
+}
 
-        &:hover {
-            background-color: var(--ColorDarkGray);
-            cursor: pointer;
-        }
+h2 {
+    font-size: 22px;
+    line-height: 1.3;
+    font-weight: 700;
+}
 
-        &.button--icon-share {
-            background-color: var(--ColorPrimary);
-            border: 1px solid transparent;
+a {
+    color: var(--ColorText);
+}
 
-            &::before {
-                content: url('/_resources/app/client/icons/actions/action_share.svg');
-                display: inline-block;
-                margin-right: 10px;
-                padding: 0;
-                height: 25px;
-                width: 25px;
-            }
-        }
-
-        &.button--icon-link {
-            &::before {
-                content: url('/_resources/app/client/icons/actions/action_link.svg');
-                display: inline-block;
-                margin-right: 10px;
-                padding: 0;
-                height: 25px;
-                width: 25px;
-            }
-        }
-
-        &.button--icon-archive {
-            &::before {
-                content: url('/_resources/app/client/icons/actions/action_archive.svg');
-                display: inline-block;
-                padding: 0;
-                height: 25px;
-                width: 25px;
-            }
-        }
-
-        &.button--icon-add {
-            &::before {
-                content: url('/_resources/app/client/icons/actions/action_add.svg');
-                display: inline-block;
-                padding: 0;
-                height: 25px;
-                width: 25px;
-            }
-        }
-
-        &.button--icon-open {
-            &::before {
-                content: url('/_resources/app/client/icons/actions/action_open.svg');
-                display: inline-block;
-                padding: 0;
-                height: 25px;
-                width: 25px;
-            }
-        }
-
-        &.button--icon-reserve {
-            &::before {
-                content: url('/_resources/app/client/icons/actions/action_reserve.svg');
-                display: inline-block;
-                padding: 0;
-                height: 25px;
-                width: 25px;
-            }
-        }
-    }
-
-    .editable_icon{
-        position: relative;
-
-        &::after{
-            content: '';
-            background-image: url('/_resources/app/client/icons/actions/action_edit.svg');
-            background-size: contain;
-            background-position: center;
-            display: block;
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            height: 16px;
-            width: 16px;
-            opacity: 0.2;
-        }
-    }
+strong {
+    font-weight: 700;
 }

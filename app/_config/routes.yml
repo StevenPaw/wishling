@@ -6,11 +6,15 @@ After:
 ---
 SilverStripe\Control\Director:
   rules:
-    # Frontend Routes
-    'wishlist//$Action/$ID/$OtherID': 'App\Controllers\WishlistController'
+    # JSON-API
+    'api/auth': 'App\Api\AuthApiController'
+    'api/wishlists': 'App\Api\WishlistApiController'
+    'api/wishes': 'App\Api\WishApiController'
+    'api/public': 'App\Api\PublicApiController'
 
-    # API Routes
-    'api//$Action/$ID/$OtherID': 'App\Controllers\ApiController'
-
-    # Home
-    '': 'App\Controllers\HomeController'
+    # Vue-Frontend (SPA) – das Routing übernimmt der Vue Router
+    '': 'App\Controllers\SpaController'
+    'login//$@': 'App\Controllers\SpaController'
+    'meine-listen//$@': 'App\Controllers\SpaController'
+    'liste//$@': 'App\Controllers\SpaController'
+    'profil//$@': 'App\Controllers\SpaController'

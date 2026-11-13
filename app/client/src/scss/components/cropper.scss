@@ -1,0 +1,80 @@
+// Quadratischer Bildausschnitt zum Zuschneiden des Profilbilds
+.cropper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+.cropper_viewport {
+    position: relative;
+    width: min(320px, 100%);
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--RadiusSmall);
+    background-color: var(--ColorBlack);
+    cursor: grab;
+    touch-action: none; // Gesten selbst behandeln (Verschieben, Pinch-Zoom)
+    user-select: none;
+
+    &.is-dragging {
+        cursor: grabbing;
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--ColorFocus);
+        outline-offset: 3px;
+    }
+}
+
+// Position und Skalierung kommen als CSS-Variablen aus AvatarCropper.vue
+.cropper_image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+    width: auto;
+    height: auto;
+    transform-origin: 0 0;
+    transform: translate(var(--crop-x, 0), var(--crop-y, 0)) scale(var(--crop-scale, 1));
+    pointer-events: none;
+    opacity: 0;
+
+    &.is-ready {
+        opacity: 1;
+    }
+}
+
+// Runde Vorschau: so wird das Profilbild später angezeigt
+.cropper_mask {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline-offset: -2px;
+    pointer-events: none;
+}
+
+.cropper_zoom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(320px, 100%);
+}
+
+.cropper_zoom_label {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cropper_zoom_slider {
+    flex: 1;
+    accent-color: var(--ColorPrimary);
+}
+
+.cropper_hint {
+    font-size: 14px;
+    color: var(--ColorTextSecondary);
+    text-align: center;
+}
