@@ -3,7 +3,7 @@
     "type": "silverstripe-recipe",
     "description": "The SilverStripe Framework Installer",
     "require": {
-        "php": "^8.1",
+        "php": "^8.3",
         "silverstripe/recipe-plugin": "~2.1.0",
         "silverstripe/framework": "^6.1",
         "silverstripe/admin": "^3.1",
@@ -24,8 +24,7 @@
     "extra": {
         "expose": [
             "app/client/dist",
-            "app/client/icons",
-            "app/client/images"
+            "app/client/icons"
         ],
         "resources-dir": "_resources",
         "project-files-installed": [
@@ -49,6 +48,9 @@
             "silverstripe/vendor-plugin": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true
+        },
+        "platform": {
+            "php": "8.3.0"
         }
     },
     "prefer-stable": true,

@@ -1,0 +1,177 @@
+# Deployment auf das Hetzner-Webhosting
+#
+# Baut das Projekt auf GitHub (Composer ohne Dev-Pakete, Vite-Build) und überträgt es per
+# rsync über SSH. Auf dem Server laufen danach nur noch Datenbank-Migration und Cache-Flush.
+#
+# Benötigte Einstellungen unter Settings → Secrets and variables → Actions:
+#   Secrets:
+#     DEPLOY_KEY          privater SSH-Schlüssel (öffentlicher Teil in ~/.ssh/authorized_keys auf dem Server)
+#     DEPLOY_KNOWN_HOSTS  (optional, empfohlen) Ausgabe von: ssh-keyscan -p <PORT> <HOST>
+#   Variables:
+#     DEPLOY_HOST         z. B. www123.your-server.de
+#     DEPLOY_USER         SSH-Benutzer
+#     DEPLOY_PATH         Projektverzeichnis auf dem Server (enthält composer.json, Docroot ist public/)
+#     DEPLOY_PORT         (optional) SSH-Port, Standard 222 (Hetzner Webhosting)
+#     DEPLOY_PHP          (optional) PHP-CLI auf dem Server, Standard "php"
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Nie zwei Deployments gleichzeitig; ein laufendes wird nicht abgebrochen
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '222' }}
+      DEPLOY_PHP: ${{ vars.DEPLOY_PHP || 'php' }}
+
+    steps:
+      - name: Konfiguration prüfen
+        env:
+          HAS_DEPLOY_KEY: ${{ secrets.DEPLOY_KEY != '' }}
+        run: |
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_PATH; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Variable $name ist nicht gesetzt (Settings → Secrets and variables → Actions → Variables)."
+              missing=1
+            fi
+          done
+          if [ "$HAS_DEPLOY_KEY" != "true" ]; then
+            echo "::error::Secret DEPLOY_KEY ist nicht gesetzt."
+            missing=1
+          fi
+          # Schutz vor versehentlichem Löschen durch rsync --delete
+          # (Vergleich mit dem wörtlichen "~" ist gewollt)
+          # shellcheck disable=SC2088
+          case "$DEPLOY_PATH" in
+            ""|"/"|"~"|"~/"|"."|"./")
+              echo "::error::DEPLOY_PATH '$DEPLOY_PATH' ist zu allgemein. Bitte das Projektverzeichnis angeben."
+              missing=1 ;;
+          esac
+          exit $missing
+
+      - uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: yarn
+
+      - name: Frontend bauen
+        run: |
+          yarn install --frozen-lockfile --non-interactive
+          yarn build
+
+      - name: PHP einrichten
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: gd, intl, mbstring, pdo_mysql, zip, exif
+          tools: composer:v2
+          coverage: none
+
+      - name: Composer-Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      # Erst nach dem Frontend-Build: Composer kopiert app/client/dist dabei nach public/_resources
+      - name: Composer-Abhängigkeiten installieren
+        env:
+          # Dateien nach public/_resources kopieren statt verlinken (Links würden auf dem Server ins Leere zeigen)
+          SS_VENDOR_METHOD: copy
+        run: composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress
+
+      - name: SSH einrichten
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          if [ -n "$DEPLOY_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          else
+            echo "::warning::DEPLOY_KNOWN_HOSTS ist nicht gesetzt – der Host-Schlüssel wird ungeprüft per ssh-keyscan übernommen."
+            ssh-keyscan -p "$DEPLOY_PORT" "$DEPLOY_HOST" > ~/.ssh/known_hosts 2>/dev/null
+          fi
+          chmod 600 ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host deploy-target
+            HostName $DEPLOY_HOST
+            User $DEPLOY_USER
+            Port $DEPLOY_PORT
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+
+      - name: Zielverzeichnis prüfen
+        run: |
+          # Nur in ein leeres Verzeichnis oder ein bestehendes Silverstripe-Projekt deployen
+          ssh deploy-target bash -s -- "$DEPLOY_PATH" <<'EOF'
+          set -e
+          target="$1"
+          mkdir -p "$target"
+          if [ -n "$(ls -A "$target")" ] && [ ! -f "$target/composer.json" ]; then
+            echo "Das Zielverzeichnis $target ist nicht leer und enthält keine composer.json – Abbruch zur Sicherheit." >&2
+            exit 1
+          fi
+          if [ ! -f "$target/.env" ]; then
+            echo "::warning::Auf dem Server fehlt $target/.env (Datenbank, MAILER_DSN, WISHLING_MAIL_FROM)."
+          fi
+          EOF
+
+      - name: Dateien übertragen
+        run: |
+          # Geschützt (weder überschrieben noch gelöscht): .env, hochgeladene Dateien, Caches
+          rsync -az --delete --human-readable --stats \
+            --exclude='/.git/' \
+            --exclude='/.github/' \
+            --exclude='/.ddev/' \
+            --exclude='/.vscode/' \
+            --exclude='/node_modules/' \
+            --exclude='/tests/' \
+            --exclude='/.env' \
+            --exclude='/silverstripe-cache/' \
+            --exclude='/.graphql-generated/' \
+            --exclude='/public/_graphql/' \
+            --include='/public/assets/.htaccess' \
+            --include='/public/assets/web.config' \
+            --exclude='/public/assets/*' \
+            ./ "deploy-target:$DEPLOY_PATH/"
+
+      - name: Datenbank aktualisieren & Cache leeren
+        run: |
+          ssh deploy-target bash -s -- "$DEPLOY_PATH" "$DEPLOY_PHP" <<'EOF'
+          set -e
+          cd "$1"
+          "$2" -v | head -n 1
+          "$2" vendor/bin/sake db:build --flush
+          EOF
+
+      - name: SSH-Schlüssel entfernen
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
