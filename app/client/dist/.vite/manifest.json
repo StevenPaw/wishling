@@ -20,7 +20,7 @@
     "src": "app/client/src/fonts/quicksand-v37-latin-regular.woff2"
   },
   "app/client/src/js/main.js": {
-    "file": "assets/main.js-CmPY9_9S.js",
+    "file": "assets/main.js-Dk4XLou1.js",
     "name": "main.js",
     "src": "app/client/src/js/main.js",
     "isEntry": true
@@ -35,7 +35,7 @@
     ]
   },
   "app/client/src/scss/main.scss": {
-    "file": "assets/main-D3oTVoDq.css",
+    "file": "assets/main-DjDdB5Al.css",
     "src": "app/client/src/scss/main.scss",
     "isEntry": true,
     "name": "main.scss",

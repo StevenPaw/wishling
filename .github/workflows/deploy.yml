@@ -146,7 +146,7 @@ jobs:
 
       - name: Dateien übertragen
         run: |
-          # Geschützt (weder überschrieben noch gelöscht): .env, hochgeladene Dateien, Caches
+          # Geschützt (weder überschrieben noch gelöscht): .env, hochgeladene Dateien, Caches, Logs
           rsync -az --delete --human-readable --stats \
             --exclude='/.git/' \
             --exclude='/.github/' \
@@ -156,6 +156,7 @@ jobs:
             --exclude='/tests/' \
             --exclude='/.env' \
             --exclude='/silverstripe-cache/' \
+            --exclude='/logs/' \
             --exclude='/.graphql-generated/' \
             --exclude='/public/_graphql/' \
             --include='/public/assets/.htaccess' \

@@ -11,6 +11,7 @@ $icons: (
     duplicate: 'action_duplicate.svg',
     visibility: 'visibility.svg',
     visibility-off: 'visibility_off.svg',
+    history: 'action_history.svg',
 );
 
 .button {
@@ -56,6 +57,17 @@ $icons: (
 
         &:hover:not(:disabled) {
             color: var(--ColorText);
+        }
+    }
+
+    // Für bestätigte, nicht ohne Weiteres umkehrbare Aktionen (z. B. Freigeben, Entfernen)
+    &.button--danger {
+        background-color: var(--ColorError);
+        border-color: transparent;
+        color: var(--ColorWhite);
+
+        &:hover:not(:disabled) {
+            background-color: #DC2626;
         }
     }
 

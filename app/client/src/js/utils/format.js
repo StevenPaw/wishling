@@ -1,4 +1,22 @@
 const currency = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
+const dateTime = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
+const date = new Intl.DateTimeFormat('de-DE', { dateStyle: 'medium' });
+
+/**
+ * ISO-Zeitstempel aus der API, z. B. "13.11.2026, 19:03"
+ */
+export function formatDateTime(iso) {
+    const value = new Date(iso);
+    return Number.isNaN(value.getTime()) ? '' : dateTime.format(value);
+}
+
+/**
+ * ISO-Zeitstempel aus der API, nur Datum, z. B. "13.11.2026"
+ */
+export function formatDate(iso) {
+    const value = new Date(iso);
+    return Number.isNaN(value.getTime()) ? '' : date.format(value);
+}
 
 /**
  * Erste Zahl aus einem Preis-Text, z. B. "ca. 20–30 €" -> 20, "12,50" -> 12.5.

@@ -38,10 +38,12 @@ class Wish extends DataObject
 
     private static $has_many = [
         'Reservations' => WishReservation::class . '.Parent',
+        'ReservationEvents' => WishReservationEvent::class . '.Wish',
     ];
 
     private static $cascade_deletes = [
         'Reservations',
+        'ReservationEvents',
     ];
 
     private static $owns = [
@@ -129,15 +131,22 @@ class Wish extends DataObject
             'url' => $this->URL ?: '',
             'archived' => (bool) $this->Archived,
             'hidden' => (bool) $this->Hidden,
-            'created' => $this->Created,
+            // ISO 8601 mit Zeitzone; bleibt als String chronologisch sortierbar
+            'created' => date(DATE_ATOM, strtotime((string) $this->Created)),
         ];
 
         if ($includeReservation) {
             $reservation = $this->getActiveReservation();
             $data['reservation'] = $reservation ? [
                 'guestName' => $reservation->GuestName,
-                'created' => $reservation->Created,
+                'created' => date(DATE_ATOM, strtotime((string) $reservation->Created)),
             ] : null;
+
+            // Verlauf nur in der Gast-Ansicht (includeReservation ist für den Besitzer immer false)
+            $data['history'] = [];
+            foreach ($this->ReservationEvents()->limit(50) as $event) {
+                $data['history'][] = $event->toApi();
+            }
         }
 
         return $data;

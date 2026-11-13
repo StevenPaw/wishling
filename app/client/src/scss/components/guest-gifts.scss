@@ -1,0 +1,91 @@
+// Von Gästen zusätzlich eingetragene Geschenke (unter der Wunschliste)
+.guest_gifts {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    // Überschreibt die globale section-Regel (max-width + margin: 0 auto), die den Bereich sonst schmal zentriert
+    width: 100%;
+    max-width: none;
+    margin: 12px 0 0;
+    padding: 20px;
+    background-color: var(--ColorSurface);
+    border: 1px solid var(--ColorBorder);
+    border-radius: var(--Radius);
+}
+
+.guest_gifts_title {
+    font-size: 22px;
+}
+
+.guest_gifts_hint {
+    font-size: 15px;
+    color: var(--ColorTextSecondary);
+}
+
+.guest_gifts_list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--ColorBorder);
+    border-radius: var(--RadiusSmall);
+}
+
+.guest_gift {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--ColorBorder);
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.guest_gift_text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.guest_gift_title {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.guest_gift_meta {
+    font-size: 14px;
+    color: var(--ColorTextSecondary);
+}
+
+// Formular in einer Zeile: Geschenk | Name | Button
+.guest_gifts_form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+
+    .guest_gifts_field--title {
+        flex: 2 1 260px;
+    }
+
+    .guest_gifts_field--name {
+        flex: 1 1 180px;
+    }
+
+    .button {
+        flex: 0 0 auto;
+        height: 44px;
+    }
+}
+
+@media (max-width: 600px) {
+    .guest_gifts {
+        padding: 16px;
+    }
+
+    .guest_gifts_form .button {
+        flex: 1 1 100%;
+    }
+}

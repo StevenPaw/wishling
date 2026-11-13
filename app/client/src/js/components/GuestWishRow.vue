@@ -19,8 +19,7 @@
                 <button
                     type="button"
                     class="button button--ghost button--small"
-                    :disabled="busy"
-                    :aria-label="`Reservierung für „${wish.title}“ aufheben`"
+                    :aria-label="`Reservierung für „${wish.title}“ freigeben`"
                     @click="$emit('unreserve')"
                 >
                     Freigeben
@@ -30,12 +29,19 @@
                 v-else
                 type="button"
                 class="button button--icon-reserve button--small"
-                :disabled="busy"
                 :aria-label="`„${wish.title}“ reservieren`"
                 @click="$emit('reserve')"
             >
                 Reservieren
             </button>
+            <button
+                v-if="!isOwner"
+                type="button"
+                class="button button--icon-history button--icon-only"
+                :aria-label="`Verlauf von „${wish.title}“ anzeigen`"
+                title="Verlauf anzeigen"
+                @click="$emit('history')"
+            />
         </div>
     </div>
 </template>
@@ -48,7 +54,6 @@ import WishPriority from '@/components/WishPriority.vue';
 defineProps({
     wish: { type: Object, required: true },
     isOwner: { type: Boolean, default: false },
-    busy: { type: Boolean, default: false },
 });
-defineEmits(['reserve', 'unreserve']);
+defineEmits(['reserve', 'unreserve', 'history']);
 </script>

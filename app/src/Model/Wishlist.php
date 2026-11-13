@@ -33,6 +33,8 @@ class Wishlist extends DataObject
 
     private static $has_many = [
         'Wishes' => Wish::class . '.Parent',
+        // Von Gästen zusätzlich eingetragene Geschenke (nur für Gäste sichtbar)
+        'GuestGifts' => GuestGift::class . '.Wishlist',
     ];
 
     private static $owns = [
@@ -41,6 +43,7 @@ class Wishlist extends DataObject
 
     private static $cascade_deletes = [
         'Wishes',
+        'GuestGifts',
     ];
 
     private static $indexes = [
@@ -137,9 +140,18 @@ class Wishlist extends DataObject
             $wishes[] = $wish->toApi($includeReservations);
         }
 
-        return $this->baseApiData() + [
+        $data = $this->baseApiData() + [
             'wishes' => $wishes,
         ];
+
+        if ($includeReservations) {
+            $data['guestGifts'] = [];
+            foreach ($this->GuestGifts() as $gift) {
+                $data['guestGifts'][] = $gift->toApi();
+            }
+        }
+
+        return $data;
     }
 
     private function baseApiData(): array

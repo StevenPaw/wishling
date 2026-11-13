@@ -1,0 +1,42 @@
+// Verlauf von Reservierungen (Dialog)
+.history_list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    max-height: min(50vh, 420px);
+    overflow-y: auto;
+    border: 1px solid var(--ColorBorder);
+    border-radius: var(--RadiusSmall);
+}
+
+.history_entry {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    padding: 10px 12px 10px 14px;
+    border-bottom: 1px solid var(--ColorBorder);
+    border-left: 3px solid var(--ColorPrimary);
+    font-size: 15px;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &.history_entry--released {
+        border-left-color: var(--ColorGray);
+    }
+
+    &.history_entry--created {
+        border-left-color: var(--ColorBorder);
+        color: var(--ColorTextSecondary);
+    }
+}
+
+.history_time {
+    flex: 0 0 auto;
+    min-width: 9.5em;
+    font-size: 14px;
+    color: var(--ColorTextSecondary);
+    font-variant-numeric: tabular-nums;
+}

@@ -38,5 +38,7 @@ export const wishApi = {
 export const publicApi = {
     wishlist: (hash) => get(`public/wishlists/${enc(hash)}`),
     reserve: (hash, data) => post(`public/wishes/${enc(hash)}/reservation`, data),
-    unreserve: (hash) => del(`public/wishes/${enc(hash)}/reservation`),
+    unreserve: (hash, data) => del(`public/wishes/${enc(hash)}/reservation`, data),
+    addGift: (wishlistHash, data) => post(`public/wishlists/${enc(wishlistHash)}/gifts`, data),
+    removeGift: (giftHash) => del(`public/gifts/${enc(giftHash)}`),
 };

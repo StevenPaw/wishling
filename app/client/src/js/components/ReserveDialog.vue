@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import { load, save } from '@/utils/storage';
+import { loadGuestName, saveGuestName } from '@/utils/guestName';
 import AppDialog from '@/components/AppDialog.vue';
 
 const props = defineProps({
@@ -74,7 +74,7 @@ watch(
     () => props.wish,
     (wish) => {
         if (wish) {
-            guestName.value = load('wishling.guestName', '');
+            guestName.value = loadGuestName();
             message.value = '';
             error.value = '';
         }
@@ -90,7 +90,7 @@ async function submit() {
     submitting.value = true;
     try {
         await props.onSubmit({ guestName: guestName.value.trim(), message: message.value.trim() });
-        save('wishling.guestName', guestName.value.trim());
+        saveGuestName(guestName.value);
         emit('close');
     } catch (e) {
         error.value = e.message;
